@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Modifier' if skill else 'Nouvelle' }} compétence{% endblock %}
+{% block page_title %}{{ 'Modifier' if skill else 'Nouvelle' }} compétence{% endblock %}
+{% block content %}
+<div class="form-single">
+  <div class="dash-card">
+    <form method="POST">
+      <div class="fg-row">
+        <div class="fg"><label>Catégorie *</label><input type="text" name="category" value="{{ skill.category if skill else '' }}" placeholder="Langages" required/></div>
+        <div class="fg" style="flex:0 0 80px"><label>Ordre</label><input type="number" name="order" value="{{ skill.order if skill else 0 }}" min="0"/></div>
+      </div>
+      <div class="fg"><label>Icône FontAwesome <small>(ex: fas fa-code)</small></label>
+        <input type="text" name="icon" value="{{ skill.icon if skill else 'fas fa-code' }}" placeholder="fas fa-code"/>
+      </div>
+      <div class="fg"><label>Items <small>(séparés par des virgules)</small></label>
+        <input type="text" name="items" value="{{ skill.get_items()|join(', ') if skill else '' }}" placeholder="PHP, JavaScript, HTML5, CSS3"/>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> {{ 'Mettre à jour' if skill else 'Créer' }}</button>
+        <a href="{{ url_for('admin_skills') }}" class="btn-cancel">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="{{ profile.name }} — {{ profile.title }}"/>
+  <title>{{ profile.name }} — {{ profile.title }}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}"/>
+</head>
+<body>
+
+<div class="cursor"></div>
+<div class="cursor-ring"></div>
+
+<!-- LOADER -->
+<div id="pageLoader">
+  <div class="loader-inner">
+    <span class="loader-logo">Ankidine Ibrahim</span>
+    <div class="loader-bar"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="nav-logo" href="#hero">Ankidine Ibrahim</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#experience">Expérience</a></li>
+    <li><a href="#skills">Compétences</a></li>
+    <li><a href="#projects">Projets</a></li>
+    <li><a href="#education">Formation</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-btn" id="themeBtn" aria-label="Thème">
+      <span class="theme-knob"></span>
+    </button>
+    <a href="{{ url_for('download_cv') }}" class="nav-cv-btn">
+      <i class="fas fa-download"></i> CV
+    </a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-l">
+    <a class="footer-logo" href="#hero">IA.</a>
+    <span class="footer-copy">© 2025 <b>{{ profile.name }}</b> · Tous droits réservés</span>
+  </div>
+  <a href="#hero" class="back-top"><i class="fas fa-chevron-up"></i></a>
+</footer>
+
+<!-- Floating CV -->
+<a href="{{ url_for('download_cv') }}" class="cv-float" id="cvFloat">
+  <i class="fas fa-file-arrow-down"></i><span>CV</span>
+</a>
+
+<script src="{{ url_for('static', filename='js/public.js') }}"></script>
+</body>
+</html>

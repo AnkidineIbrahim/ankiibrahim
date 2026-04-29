@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Modifier' if exp else 'Nouvelle' }} expérience{% endblock %}
+{% block page_title %}{{ 'Modifier' if exp else 'Nouvelle' }} expérience{% endblock %}
+{% block content %}
+<div class="form-single">
+  <div class="dash-card">
+    <form method="POST">
+      <div class="fg-row">
+        <div class="fg"><label>Entreprise *</label><input type="text" name="company" value="{{ exp.company if exp else '' }}" required/></div>
+        <div class="fg" style="flex:0 0 80px"><label>Ordre</label><input type="number" name="order" value="{{ exp.order if exp else 0 }}" min="0"/></div>
+      </div>
+      <div class="fg"><label>Rôle / Poste *</label><input type="text" name="role" value="{{ exp.role if exp else '' }}" required/></div>
+      <div class="fg"><label>Période *</label><input type="text" name="period" value="{{ exp.period if exp else '' }}" placeholder="2022 — Présent" required/></div>
+      <div class="fg">
+        <label>Points clés <small>(un par ligne)</small></label>
+        <textarea name="bullets" rows="6" placeholder="Développement d'applications web internes&#10;Intégration d'APIs RESTful&#10;...">{{ exp.get_bullets()|join('\n') if exp else '' }}</textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> {{ 'Mettre à jour' if exp else 'Créer' }}</button>
+        <a href="{{ url_for('admin_experiences') }}" class="btn-cancel">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

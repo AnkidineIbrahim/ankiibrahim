@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — {% block title %}Dashboard{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"/>
+</head>
+<body class="admin-body">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-header">
+    <a href="{{ url_for('index') }}" class="sb-logo">IA.</a>
+    <span class="sb-badge">Admin</span>
+  </div>
+
+  <nav class="sb-nav">
+    <p class="sb-section">Principal</p>
+    <a href="{{ url_for('admin_dashboard') }}" class="sb-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+      <i class="fas fa-chart-line"></i> Dashboard
+    </a>
+    <a href="{{ url_for('admin_stats') }}" class="sb-link {% if request.endpoint == 'admin_stats' %}active{% endif %}">
+      <i class="fas fa-chart-bar"></i> Statistiques
+    </a>
+    <a href="{{ url_for('admin_messages') }}" class="sb-link {% if request.endpoint == 'admin_messages' %}active{% endif %}">
+      <i class="fas fa-envelope"></i> Messages
+      {% set unread = unread_count|default(0) %}
+      {% if unread > 0 %}<span class="sb-badge-count">{{ unread }}</span>{% endif %}
+    </a>
+
+    <p class="sb-section">Contenu</p>
+    <a href="{{ url_for('admin_profile') }}" class="sb-link {% if request.endpoint == 'admin_profile' %}active{% endif %}">
+      <i class="fas fa-user"></i> Profil
+    </a>
+    <a href="{{ url_for('admin_projects') }}" class="sb-link {% if 'project' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-rocket"></i> Projets
+    </a>
+    <a href="{{ url_for('admin_experiences') }}" class="sb-link {% if 'experience' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-briefcase"></i> Expériences
+    </a>
+    <a href="{{ url_for('admin_skills') }}" class="sb-link {% if 'skill' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-cogs"></i> Compétences
+    </a>
+    <a href="{{ url_for('admin_education') }}" class="sb-link {% if 'education' in request.endpoint %}active{% endif %}">
+      <i class="fas fa-graduation-cap"></i> Formation
+    </a>
+
+    <p class="sb-section">Compte</p>
+    <a href="{{ url_for('index') }}" class="sb-link" target="_blank">
+      <i class="fas fa-eye"></i> Voir le site
+    </a>
+    <a href="{{ url_for('admin_logout') }}" class="sb-link sb-logout">
+      <i class="fas fa-sign-out-alt"></i> Déconnexion
+    </a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="admin-main">
+  <!-- Top bar -->
+  <header class="admin-topbar">
+    <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+    <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+    <div class="topbar-right">
+      <a href="{{ url_for('index') }}" target="_blank" class="topbar-btn">
+        <i class="fas fa-external-link-alt"></i> Site public
+      </a>
+      <div class="topbar-avatar">IA</div>
+    </div>
+  </header>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-wrap">
+        {% for cat, msg in messages %}
+          <div class="flash flash-{{ cat }}">
+            <i class="fas {% if cat == 'success' %}fa-check-circle{% elif cat == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+            {{ msg }}
+            <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Content -->
+  <div class="admin-content">
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+{% block title %}Formation{% endblock %}
+{% block page_title %}Formation{% endblock %}
+{% block content %}
+<div class="list-head">
+  <p>{{ educations|length }} formation(s)</p>
+  <a href="{{ url_for('admin_education_new') }}" class="btn-submit"><i class="fas fa-plus"></i> Nouvelle formation</a>
+</div>
+<div class="table-card">
+  <table class="admin-table">
+    <thead><tr><th>Diplôme</th><th>École</th><th>Période</th><th>Ordre</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for e in educations %}
+      <tr>
+        <td><strong>{{ e.degree }}</strong></td>
+        <td>{{ e.school }}</td>
+        <td><span class="tag-pill">{{ e.period }}</span></td>
+        <td>{{ e.order }}</td>
+        <td class="tbl-actions">
+          <a href="{{ url_for('admin_education_edit', eid=e.id) }}" class="tbl-btn tbl-edit"><i class="fas fa-edit"></i></a>
+          <form method="POST" action="{{ url_for('admin_education_delete', eid=e.id) }}" onsubmit="return confirm('Supprimer ?')">
+            <button type="submit" class="tbl-btn tbl-del"><i class="fas fa-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="tbl-empty">Aucune formation.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

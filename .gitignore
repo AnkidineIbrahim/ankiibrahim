@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+
+# Database locale (Vercel utilise /tmp)
+instance/
+*.db
+*.sqlite3
+
+# Uploads locaux
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

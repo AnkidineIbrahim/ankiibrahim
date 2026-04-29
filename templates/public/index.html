@@ -1,0 +1,249 @@
+{% extends "public/base.html" %}
+{% block content %}
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-mesh">
+    <div class="mesh-orb orb1"></div>
+    <div class="mesh-orb orb2"></div>
+    <div class="mesh-orb orb3"></div>
+  </div>
+  <div class="hero-grid-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        {% if profile.available %}Disponible · Open to work{% else %}Actuellement occupé{% endif %}
+      </div>
+      <p class="hero-eyebrow">Full Stack Developer</p>
+      <h1 class="hero-name">
+        <span class="name-line">{{ profile.name.split()[0] }}</span>
+        <em class="name-em">{{ profile.name.split()[1] if profile.name.split()|length > 1 else '' }}</em>
+      </h1>
+      <p class="hero-role"><span id="heroRole">{{ profile.title }}</span><span class="typed-cursor"></span></p>
+      <p class="hero-desc">{{ profile.bio }}</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary"><i class="fas fa-arrow-right"></i> Mes projets</a>
+        <a href="{{ url_for('download_cv') }}" class="btn-download-hero">
+          <i class="fas fa-download"></i> Télécharger le CV
+        </a>
+        <a href="#contact" class="btn-ghost"><i class="fas fa-paper-plane"></i> Contact</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-n" data-target="{{ profile.years_exp }}" data-suffix="+">{{ profile.years_exp }}+</span><span class="stat-l">Années d'exp.</span></div>
+        <div class="stat"><span class="stat-n" data-target="{{ profile.companies }}">{{ profile.companies }}</span><span class="stat-l">Entreprises</span></div>
+        <div class="stat"><span class="stat-n" data-target="{{ profile.tech_count }}" data-suffix="+">{{ profile.tech_count }}+</span><span class="stat-l">Technologies</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="photo-wrap">
+        <div class="photo-rings">
+          <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+        </div>
+        <div class="photo-frame">
+          <img src="{{ url_for('static', filename=profile.photo) }}" alt="{{ profile.name }}"/>
+          <div class="corner tl"></div><div class="corner tr"></div>
+          <div class="corner bl"></div><div class="corner br"></div>
+        </div>
+        <div class="float-badge fb1">
+          <span class="fb-icon">💻</span>
+          <div><span class="fb-main">Full Stack Dev</span><span class="fb-sub">PHP · Laravel · React</span></div>
+        </div>
+        <div class="float-badge fb2">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Comores 🇰🇲</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div><span>Scroll</span></div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="about-wrap">
+    <div class="about-left">
+      <p class="stag">// À propos</p>
+      <h2 class="sec-title reveal">Qui suis-je <em>vraiment</em> ?</h2>
+      <div class="sec-div"></div>
+      <div class="about-text reveal">
+        <p>{{ profile.bio }}</p>
+        <p>Rigueur, veille technologique permanente et sens du détail sont les moteurs de mon travail quotidien.</p>
+      </div>
+      <div class="chips reveal">
+        <span class="chip"><i class="fas fa-code"></i> Développement Web</span>
+        <span class="chip"><i class="fas fa-server"></i> APIs RESTful</span>
+        <span class="chip"><i class="fas fa-database"></i> Base de données</span>
+        <span class="chip"><i class="fas fa-mobile-alt"></i> Responsive</span>
+        <span class="chip"><i class="fab fa-git-alt"></i> Git & DevOps</span>
+        <span class="chip"><i class="fas fa-palette"></i> UI/UX</span>
+      </div>
+    </div>
+    <div class="about-right reveal">
+      <div class="info-card">
+        <p class="info-title"><i class="fas fa-address-card"></i> Informations</p>
+        <ul class="info-list">
+          <li><i class="fas fa-envelope"></i><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></li>
+          {% if profile.phone %}<li><i class="fas fa-phone"></i>{{ profile.phone }}</li>{% endif %}
+          <li><i class="fab fa-linkedin"></i><a href="{{ profile.linkedin }}" target="_blank">linkedin.com/in/ibrahim-ankidine</a></li>
+          <li><i class="fab fa-github"></i><a href="{{ profile.github }}" target="_blank">github.com/AnkidineIbrahim</a></li>
+          <li><i class="fas fa-map-marker-alt"></i>{{ profile.location }}</li>
+        </ul>
+        <a href="{{ url_for('download_cv') }}" class="cv-card-btn">
+          <i class="fas fa-file-arrow-down"></i> Télécharger mon CV
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ EXPERIENCE ═══ -->
+<section id="experience">
+  <div class="exp-wrap">
+    <div class="exp-sidebar">
+      <p class="stag">// Parcours</p>
+      <h2 class="sec-title reveal">Mon <em>expérience</em></h2>
+      <div class="sec-div"></div>
+      <p class="reveal">Des environnements professionnels exigeants qui m'ont permis de forger des compétences solides en développement et gestion de projets web.</p>
+    </div>
+    <div class="timeline reveal">
+      {% for exp in experiences %}
+      <div class="tl-entry">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <div class="tl-head">
+            <div>
+              <div class="tl-company">{{ exp.company }}</div>
+              <div class="tl-role">{{ exp.role }}</div>
+            </div>
+            <div class="tl-date">{{ exp.period }}</div>
+          </div>
+          <ul class="tl-list">
+            {% for b in exp.get_bullets() %}<li>{{ b }}</li>{% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SKILLS ═══ -->
+<section id="skills">
+  <p class="stag">// Stack technique</p>
+  <h2 class="sec-title reveal">Mes <em>compétences</em></h2>
+  <div class="sec-div"></div>
+  <p class="sec-sub reveal">Un arsenal d'outils soigneusement choisis pour construire des produits robustes, performants et maintenables.</p>
+  <div class="skills-bento reveal">
+    {% for skill in skills %}
+    <div class="sb {% if loop.index <= 2 %}sb-wide{% endif %}">
+      <div class="sb-icon"><i class="{{ skill.icon }}"></i></div>
+      <div class="sb-title">{{ skill.category }}</div>
+      <div class="sb-tags">
+        {% for item in skill.get_items() %}<span class="sb-tag">{{ item }}</span>{% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ═══ PROJECTS ═══ -->
+<section id="projects">
+  <div class="proj-head">
+    <div>
+      <p class="stag">// Réalisations</p>
+      <h2 class="sec-title reveal">Mes <em>projets</em></h2>
+    </div>
+    <a href="{{ profile.github }}" target="_blank" class="btn-outline reveal">
+      <i class="fab fa-github"></i> GitHub
+    </a>
+  </div>
+  <div class="proj-grid">
+    {% for p in projects %}
+    <div class="proj-card reveal">
+      <div class="pc-header">
+        <div class="pc-num">{{ p.number }}</div>
+        <div class="pc-links">
+          <a href="{{ p.github_url }}" target="_blank" class="pc-link"><i class="fab fa-github"></i></a>
+          {% if p.live_url and p.live_url != '#' %}
+          <a href="{{ p.live_url }}" target="_blank" class="pc-link"><i class="fas fa-external-link-alt"></i></a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-tag">{{ p.tag }}</div>
+        <div class="pc-title">{{ p.title }}</div>
+        <p class="pc-desc">{{ p.description }}</p>
+        <div class="pc-tech">
+          {% for t in p.get_tech() %}<span class="tech-pill">{{ t }}</span>{% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ═══ EDUCATION ═══ -->
+<section id="education">
+  <p class="stag">// Formation</p>
+  <h2 class="sec-title reveal">Parcours <em>académique</em></h2>
+  <div class="sec-div"></div>
+  <div class="edu-grid">
+    {% for e in education %}
+    <div class="edu-card reveal">
+      <div class="edu-icon"><i class="{{ e.icon }}"></i></div>
+      <div class="edu-degree">{{ e.degree }}</div>
+      <div class="edu-school">{{ e.school }}</div>
+      <div class="edu-year"><i class="fas fa-calendar-alt"></i> {{ e.period }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact">
+  <p class="stag">// Contact</p>
+  <h2 class="sec-title reveal">Travaillons <em>ensemble</em></h2>
+  <div class="sec-div"></div>
+  <div class="contact-wrap">
+    <div class="contact-left reveal">
+      <p>Vous avez un projet ambitieux ou souhaitez simplement discuter de tech ? Je suis ouvert à toutes les opportunités intéressantes.</p>
+      <div class="contact-links">
+        <a href="{{ url_for('download_cv') }}" class="clink clink-cv">
+          <div class="clink-icon gold-bg"><i class="fas fa-file-arrow-down"></i></div>
+          <div><span class="clink-lbl">Curriculum Vitæ</span><span class="clink-val">Télécharger mon CV (PDF)</span></div>
+          <i class="fas fa-download clink-arrow"></i>
+        </a>
+        <a href="mailto:{{ profile.email }}" class="clink">
+          <div class="clink-icon"><i class="fas fa-envelope"></i></div>
+          <div><span class="clink-lbl">Email</span><span class="clink-val">{{ profile.email }}</span></div>
+        </a>
+        <a href="{{ profile.linkedin }}" target="_blank" class="clink">
+          <div class="clink-icon"><i class="fab fa-linkedin"></i></div>
+          <div><span class="clink-lbl">LinkedIn</span><span class="clink-val">ibrahim-ankidine</span></div>
+        </a>
+        <a href="{{ profile.github }}" target="_blank" class="clink">
+          <div class="clink-icon"><i class="fab fa-github"></i></div>
+          <div><span class="clink-lbl">GitHub</span><span class="clink-val">AnkidineIbrahim</span></div>
+        </a>
+      </div>
+    </div>
+    <div class="contact-right reveal">
+      <div class="form-card">
+        <div id="formWrap">
+          <div class="fg"><label>Votre nom</label><input type="text" id="cName" placeholder="John Doe"/></div>
+          <div class="fg"><label>Email</label><input type="email" id="cEmail" placeholder="john@exemple.com"/></div>
+          <div class="fg"><label>Message</label><textarea id="cMsg" placeholder="Parlez-moi de votre projet..."></textarea></div>
+          <button class="btn-submit" id="btnSend"><i class="fas fa-paper-plane"></i> Envoyer</button>
+        </div>
+        <div class="form-ok" id="formOk">
+          <i class="fas fa-check-circle"></i>
+          <strong>Message envoyé !</strong>
+          <span>Je vous répondrai dans les plus brefs délais.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

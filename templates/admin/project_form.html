@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Modifier' if project else 'Nouveau' }} projet{% endblock %}
+{% block page_title %}{{ 'Modifier' if project else 'Nouveau' }} projet{% endblock %}
+{% block content %}
+<div class="form-single">
+  <div class="dash-card">
+    <form method="POST">
+      <div class="fg-row">
+        <div class="fg" style="flex:0 0 80px"><label>N°</label><input type="text" name="number" value="{{ project.number if project else '01' }}" maxlength="4"/></div>
+        <div class="fg"><label>Tag / Catégorie</label><input type="text" name="tag" value="{{ project.tag if project else '' }}" placeholder="Web App · Laravel"/></div>
+        <div class="fg" style="flex:0 0 80px"><label>Ordre</label><input type="number" name="order" value="{{ project.order if project else 0 }}" min="0"/></div>
+      </div>
+      <div class="fg"><label>Titre du projet *</label><input type="text" name="title" value="{{ project.title if project else '' }}" required/></div>
+      <div class="fg"><label>Description *</label><textarea name="description" rows="4" required>{{ project.description if project else '' }}</textarea></div>
+      <div class="fg"><label>Technologies <small>(séparées par des virgules)</small></label>
+        <input type="text" name="tech" value="{{ project.get_tech()|join(', ') if project else '' }}" placeholder="Laravel, PHP, MySQL, JavaScript"/>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label><i class="fab fa-github"></i> GitHub URL</label><input type="url" name="github_url" value="{{ project.github_url if project else '#' }}"/></div>
+        <div class="fg"><label><i class="fas fa-external-link-alt"></i> Live URL</label><input type="url" name="live_url" value="{{ project.live_url if project else '#' }}"/></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> {{ 'Mettre à jour' if project else 'Créer le projet' }}</button>
+        <a href="{{ url_for('admin_projects') }}" class="btn-cancel">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

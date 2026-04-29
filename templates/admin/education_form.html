@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Modifier' if edu else 'Nouvelle' }} formation{% endblock %}
+{% block page_title %}{{ 'Modifier' if edu else 'Nouvelle' }} formation{% endblock %}
+{% block content %}
+<div class="form-single">
+  <div class="dash-card">
+    <form method="POST">
+      <div class="fg"><label>Diplôme *</label><input type="text" name="degree" value="{{ edu.degree if edu else '' }}" required/></div>
+      <div class="fg"><label>École / Établissement *</label><input type="text" name="school" value="{{ edu.school if edu else '' }}" required/></div>
+      <div class="fg-row">
+        <div class="fg"><label>Période *</label><input type="text" name="period" value="{{ edu.period if edu else '' }}" placeholder="2018 — 2021" required/></div>
+        <div class="fg"><label>Icône <small>(fas fa-...)</small></label><input type="text" name="icon" value="{{ edu.icon if edu else 'fas fa-university' }}"/></div>
+        <div class="fg" style="flex:0 0 80px"><label>Ordre</label><input type="number" name="order" value="{{ edu.order if edu else 0 }}" min="0"/></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> {{ 'Mettre à jour' if edu else 'Créer' }}</button>
+        <a href="{{ url_for('admin_education') }}" class="btn-cancel">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

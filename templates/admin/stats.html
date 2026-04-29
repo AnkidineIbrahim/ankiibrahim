@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+{% block title %}Statistiques{% endblock %}
+{% block page_title %}Statistiques de visites{% endblock %}
+{% block content %}
+<div class="kpi-grid">
+  <div class="kpi-card kpi-gold">
+    <div class="kpi-icon"><i class="fas fa-eye"></i></div>
+    <div class="kpi-info"><span class="kpi-num">{{ total }}</span><span class="kpi-lbl">Visites totales</span></div>
+  </div>
+</div>
+
+<div class="dash-grid mt">
+  <!-- Visites par jour -->
+  <div class="dash-card">
+    <div class="dash-card-head"><h3><i class="fas fa-chart-line"></i> Visites par jour</h3></div>
+    {% if daily %}
+    <div class="chart-wrap">
+      <div class="bar-chart" id="barChart" data-values="{{ daily|map(attribute=1)|list|tojson }}" data-labels="{{ daily|map(attribute=0)|list|tojson }}"></div>
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fas fa-chart-line"></i><p>Données insuffisantes</p></div>
+    {% endif %}
+  </div>
+
+  <!-- Répartition par page -->
+  <div class="dash-card">
+    <div class="dash-card-head"><h3><i class="fas fa-chart-pie"></i> Par page</h3></div>
+    {% set total_v = total or 1 %}
+    <div class="pages-list">
+      {% for page, count in pages %}
+      <div class="page-row">
+        <span class="page-name">/{{ page }}</span>
+        <div class="page-bar-wrap">
+          <div class="page-bar" style="width:{{ [(count / total_v * 100)|int, 100]|min }}%"></div>
+        </div>
+        <span class="page-count">{{ count }} ({{ (count / total_v * 100)|int }}%)</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+// Bar chart simple
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('barChart');
+  if (!el) return;
+  const vals   = JSON.parse(el.dataset.values || '[]');
+  const labels = JSON.parse(el.dataset.labels || '[]');
+  if (!vals.length) return;
+  const max = Math.max(...vals) || 1;
+  el.innerHTML = vals.map((v, i) => `
+    <div class="bar-col">
+      <div class="bar-fill" style="height:${Math.max((v/max*180)|0,2)}px" title="${labels[i]}: ${v} visites"></div>
+      <span class="bar-label">${v}</span>
+    </div>`).join('');
+});
+</script>
+{% endblock %}

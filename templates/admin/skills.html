@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+{% block title %}Compétences{% endblock %}
+{% block page_title %}Compétences{% endblock %}
+{% block content %}
+<div class="list-head">
+  <p>{{ skills|length }} catégorie(s)</p>
+  <a href="{{ url_for('admin_skill_new') }}" class="btn-submit"><i class="fas fa-plus"></i> Nouvelle catégorie</a>
+</div>
+<div class="table-card">
+  <table class="admin-table">
+    <thead><tr><th>Icône</th><th>Catégorie</th><th>Items</th><th>Ordre</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for s in skills %}
+      <tr>
+        <td><i class="{{ s.icon }} icon-preview"></i></td>
+        <td><strong>{{ s.category }}</strong></td>
+        <td>{% for i in s.get_items() %}<span class="tech-sm">{{ i }}</span>{% endfor %}</td>
+        <td>{{ s.order }}</td>
+        <td class="tbl-actions">
+          <a href="{{ url_for('admin_skill_edit', sid=s.id) }}" class="tbl-btn tbl-edit"><i class="fas fa-edit"></i></a>
+          <form method="POST" action="{{ url_for('admin_skill_delete', sid=s.id) }}" onsubmit="return confirm('Supprimer ?')">
+            <button type="submit" class="tbl-btn tbl-del"><i class="fas fa-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="tbl-empty">Aucune compétence.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

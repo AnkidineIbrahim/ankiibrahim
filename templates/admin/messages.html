@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+{% block title %}Messages{% endblock %}
+{% block page_title %}Messages reçus{% endblock %}
+{% block content %}
+<div class="table-card">
+  <table class="admin-table">
+    <thead><tr><th>Statut</th><th>Nom</th><th>Email</th><th>Message</th><th>Date</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for m in messages %}
+      <tr class="{% if not m.read %}row-unread{% endif %}">
+        <td>
+          {% if m.read %}
+            <span class="status-badge status-read"><i class="fas fa-check"></i> Lu</span>
+          {% else %}
+            <span class="status-badge status-new"><i class="fas fa-circle"></i> Nouveau</span>
+          {% endif %}
+        </td>
+        <td><strong>{{ m.name }}</strong></td>
+        <td><a href="mailto:{{ m.email }}">{{ m.email }}</a></td>
+        <td class="msg-cell">{{ m.content[:100] }}{% if m.content|length > 100 %}…{% endif %}</td>
+        <td><span class="date-sm">{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}</span></td>
+        <td class="tbl-actions">
+          {% if not m.read %}
+          <form method="POST" action="{{ url_for('admin_message_read', mid=m.id) }}">
+            <button type="submit" class="tbl-btn tbl-edit" title="Marquer comme lu"><i class="fas fa-check"></i></button>
+          </form>
+          {% endif %}
+          <a href="mailto:{{ m.email }}" class="tbl-btn tbl-reply" title="Répondre"><i class="fas fa-reply"></i></a>
+          <form method="POST" action="{{ url_for('admin_message_delete', mid=m.id) }}" onsubmit="return confirm('Supprimer ce message ?')">
+            <button type="submit" class="tbl-btn tbl-del" title="Supprimer"><i class="fas fa-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="tbl-empty"><i class="fas fa-inbox"></i> Aucun message reçu.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

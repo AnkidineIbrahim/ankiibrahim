@@ -1,0 +1,111 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- KPI CARDS -->
+<div class="kpi-grid">
+  <div class="kpi-card kpi-gold">
+    <div class="kpi-icon"><i class="fas fa-eye"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-num">{{ stats.visits_total }}</span>
+      <span class="kpi-lbl">Visites totales</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon"><i class="fas fa-calendar-day"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-num">{{ stats.visits_today }}</span>
+      <span class="kpi-lbl">Visites aujourd'hui</span>
+    </div>
+  </div>
+  <div class="kpi-card {% if stats.messages_unread > 0 %}kpi-alert{% endif %}">
+    <div class="kpi-icon"><i class="fas fa-envelope"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-num">{{ stats.messages_unread }}</span>
+      <span class="kpi-lbl">Messages non lus</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon"><i class="fas fa-rocket"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-num">{{ stats.projects }}</span>
+      <span class="kpi-lbl">Projets publiés</span>
+    </div>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="dash-grid">
+  <!-- Recent Messages -->
+  <div class="dash-card">
+    <div class="dash-card-head">
+      <h3><i class="fas fa-envelope"></i> Derniers messages</h3>
+      <a href="{{ url_for('admin_messages') }}" class="dash-link">Voir tout →</a>
+    </div>
+    {% if recent_msgs %}
+    <div class="msg-list">
+      {% for m in recent_msgs %}
+      <div class="msg-item {% if not m.read %}msg-unread{% endif %}">
+        <div class="msg-avatar">{{ m.name[0].upper() }}</div>
+        <div class="msg-body">
+          <span class="msg-name">{{ m.name }}</span>
+          <span class="msg-email">{{ m.email }}</span>
+          <p class="msg-preview">{{ m.content[:80] }}{% if m.content|length > 80 %}…{% endif %}</p>
+        </div>
+        <div class="msg-meta">
+          <span class="msg-date">{{ m.created_at.strftime('%d/%m/%y') }}</span>
+          {% if not m.read %}<span class="msg-dot"></span>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fas fa-inbox"></i><p>Aucun message</p></div>
+    {% endif %}
+  </div>
+
+  <!-- Pages visitées -->
+  <div class="dash-card">
+    <div class="dash-card-head">
+      <h3><i class="fas fa-chart-pie"></i> Pages visitées</h3>
+      <a href="{{ url_for('admin_stats') }}" class="dash-link">Détails →</a>
+    </div>
+    {% if pages %}
+    <div class="pages-list">
+      {% set total_v = stats.visits_total or 1 %}
+      {% for page, count in pages %}
+      <div class="page-row">
+        <span class="page-name">/{{ page }}</span>
+        <div class="page-bar-wrap">
+          <div class="page-bar" style="width:{{ [(count / total_v * 100)|int, 100]|min }}%"></div>
+        </div>
+        <span class="page-count">{{ count }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><i class="fas fa-chart-pie"></i><p>Aucune donnée</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="dash-card mt">
+  <div class="dash-card-head"><h3><i class="fas fa-bolt"></i> Actions rapides</h3></div>
+  <div class="quick-grid">
+    <a href="{{ url_for('admin_project_new') }}" class="quick-btn">
+      <i class="fas fa-plus"></i> Nouveau projet
+    </a>
+    <a href="{{ url_for('admin_experience_new') }}" class="quick-btn">
+      <i class="fas fa-plus"></i> Nouvelle expérience
+    </a>
+    <a href="{{ url_for('admin_skill_new') }}" class="quick-btn">
+      <i class="fas fa-plus"></i> Nouvelle compétence
+    </a>
+    <a href="{{ url_for('admin_profile') }}" class="quick-btn quick-btn-gold">
+      <i class="fas fa-user-edit"></i> Modifier le profil
+    </a>
+  </div>
+</div>
+{% endblock %}

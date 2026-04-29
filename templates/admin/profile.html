@@ -1,0 +1,78 @@
+{% extends "admin/base.html" %}
+{% block title %}Profil{% endblock %}
+{% block page_title %}Mon Profil{% endblock %}
+{% block content %}
+<form method="POST" enctype="multipart/form-data">
+  <div class="form-grid">
+
+    <!-- LEFT : Photo + CV -->
+    <div class="form-sidebar">
+      <div class="dash-card">
+        <h3 class="card-section-title"><i class="fas fa-camera"></i> Photo de profil</h3>
+        <div class="photo-preview">
+          <img src="{{ url_for('static', filename=profile.photo) }}" alt="Photo" id="photoPreview"/>
+        </div>
+        <label class="file-label">
+          <i class="fas fa-upload"></i> Choisir une photo
+          <input type="file" name="photo" accept="image/*" onchange="previewPhoto(this)"/>
+        </label>
+      </div>
+      <div class="dash-card mt">
+        <h3 class="card-section-title"><i class="fas fa-file-pdf"></i> Curriculum Vitæ</h3>
+        <p class="form-hint">Fichier actuel : <code>{{ profile.cv_file }}</code></p>
+        <label class="file-label">
+          <i class="fas fa-upload"></i> Remplacer le CV (PDF)
+          <input type="file" name="cv" accept=".pdf"/>
+        </label>
+        <a href="{{ url_for('download_cv') }}" class="btn-outline mt" style="display:inline-flex;margin-top:.8rem">
+          <i class="fas fa-download"></i> Télécharger actuel
+        </a>
+      </div>
+      <div class="dash-card mt">
+        <h3 class="card-section-title"><i class="fas fa-chart-bar"></i> Stats Hero</h3>
+        <div class="fg"><label>Années d'exp.</label><input type="number" name="years_exp" value="{{ profile.years_exp }}" min="0"/></div>
+        <div class="fg"><label>Entreprises</label><input type="number" name="companies" value="{{ profile.companies }}" min="0"/></div>
+        <div class="fg"><label>Technologies</label><input type="number" name="tech_count" value="{{ profile.tech_count }}" min="0"/></div>
+        <div class="fg toggle-fg">
+          <label>Disponible pour missions</label>
+          <label class="toggle"><input type="checkbox" name="available" {% if profile.available %}checked{% endif %}/><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT : Infos -->
+    <div class="form-main">
+      <div class="dash-card">
+        <h3 class="card-section-title"><i class="fas fa-user"></i> Informations personnelles</h3>
+        <div class="fg"><label>Nom complet</label><input type="text" name="name" value="{{ profile.name }}" required/></div>
+        <div class="fg"><label>Titre / Poste</label><input type="text" name="title" value="{{ profile.title }}" required/></div>
+        <div class="fg"><label>Bio / Résumé</label><textarea name="bio" rows="4">{{ profile.bio }}</textarea></div>
+        <div class="fg-row">
+          <div class="fg"><label>Email</label><input type="email" name="email" value="{{ profile.email }}"/></div>
+          <div class="fg"><label>Téléphone</label><input type="text" name="phone" value="{{ profile.phone }}"/></div>
+        </div>
+        <div class="fg"><label>Localisation</label><input type="text" name="location" value="{{ profile.location }}"/></div>
+      </div>
+      <div class="dash-card mt">
+        <h3 class="card-section-title"><i class="fas fa-share-alt"></i> Réseaux sociaux</h3>
+        <div class="fg"><label><i class="fab fa-linkedin"></i> LinkedIn URL</label><input type="url" name="linkedin" value="{{ profile.linkedin }}"/></div>
+        <div class="fg"><label><i class="fab fa-github"></i> GitHub URL</label><input type="url" name="github" value="{{ profile.github }}"/></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Enregistrer les modifications</button>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn-cancel">Annuler</a>
+      </div>
+    </div>
+
+  </div>
+</form>
+<script>
+function previewPhoto(input) {
+  if (input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => document.getElementById('photoPreview').src = e.target.result;
+    r.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}
