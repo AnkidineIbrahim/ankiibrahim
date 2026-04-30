@@ -2,11 +2,12 @@
 init_db.py — Initialise la base de données et crée le premier admin
 Usage : python init_db.py
 """
-from app import init_db
+from app import init_db, DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD
+
 if __name__ == '__main__':
-    init_db()
-    print("✅ Base de données initialisée avec succès !")
-    print("🔑 Identifiants admin par défaut :")
-    print("   Utilisateur : ankidine")
-    print("   Mot de passe : ibrahim123")
-    print("⚠️  Changez le mot de passe après votre première connexion !")
+    init_db(reset_admin=True)
+    print("Base de donnees initialisee avec succes !")
+    print("Identifiants admin par defaut :")
+    print(f"   Utilisateur : {DEFAULT_ADMIN_USERNAME}")
+    print(f"   Mot de passe : {DEFAULT_ADMIN_PASSWORD}")
+    print("Changez le mot de passe apres votre premiere connexion !")

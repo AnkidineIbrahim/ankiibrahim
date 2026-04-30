@@ -31,6 +31,9 @@ app.config.update(
     ALLOWED_EXTENSIONS={'png', 'jpg', 'jpeg', 'webp', 'pdf'},
 )
 
+DEFAULT_ADMIN_USERNAME = os.environ.get('DEFAULT_ADMIN_USERNAME', 'ankidine')
+DEFAULT_ADMIN_PASSWORD = os.environ.get('DEFAULT_ADMIN_PASSWORD', 'ibrahim123')
+
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'admin_login'
@@ -540,16 +543,20 @@ def admin_stats():
 
 # ── INIT DB ───────────────────────────────────────────────────
 
-def init_db():
+def init_db(reset_admin=False):
     with app.app_context():
         db.create_all()
 
         # Admin par défaut
-        if not Admin.query.first():
+        admin = Admin.query.first()
+        if not admin:
             db.session.add(Admin(
-                username='admin',
-                password=generate_password_hash('admin123')
+                username=DEFAULT_ADMIN_USERNAME,
+                password=generate_password_hash(DEFAULT_ADMIN_PASSWORD)
             ))
+        elif reset_admin:
+            admin.username = DEFAULT_ADMIN_USERNAME
+            admin.password = generate_password_hash(DEFAULT_ADMIN_PASSWORD)
 
         # Profil par défaut
         if not Profile.query.first():
@@ -625,7 +632,6 @@ def init_db():
             db.session.add_all(edus)
 
         db.session.commit()
-        print("✅ Base de données initialisée")
 
 if __name__ == '__main__':
     init_db()

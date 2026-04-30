@@ -25,7 +25,7 @@ python app.py
 ```
 ➡️ **http://localhost:5000** — Admin : **http://localhost:5000/admin**
 
-**Identifiants admin :** `admin` / `admin123`
+**Identifiants admin :** `ankidine` / `ibrahim123`
 
 ---
 
