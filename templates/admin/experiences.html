@@ -2,13 +2,22 @@
 {% block title %}Expériences{% endblock %}
 {% block page_title %}Expériences{% endblock %}
 {% block content %}
+
 <div class="list-head">
   <p>{{ experiences|length }} expérience(s)</p>
-  <a href="{{ url_for('admin_experience_new') }}" class="btn-submit"><i class="fas fa-plus"></i> Nouvelle expérience</a>
+  <a href="{{ url_for('admin_experience_new') }}" class="btn-submit">
+    <i class="fas fa-plus"></i> Nouvelle expérience
+  </a>
 </div>
-<div class="table-card">
+
+{# ── VERSION DESKTOP : tableau ── #}
+<div class="table-card msg-table-wrap">
   <table class="admin-table">
-    <thead><tr><th>Entreprise</th><th>Rôle</th><th>Période</th><th>Ordre</th><th>Actions</th></tr></thead>
+    <thead>
+      <tr>
+        <th>Entreprise</th><th>Rôle</th><th>Période</th><th>Ordre</th><th>Actions</th>
+      </tr>
+    </thead>
     <tbody>
       {% for e in experiences %}
       <tr>
@@ -16,17 +25,61 @@
         <td>{{ e.role }}</td>
         <td><span class="tag-pill">{{ e.period }}</span></td>
         <td>{{ e.order }}</td>
-        <td class="tbl-actions">
-          <a href="{{ url_for('admin_experience_edit', eid=e.id) }}" class="tbl-btn tbl-edit"><i class="fas fa-edit"></i></a>
-          <form method="POST" action="{{ url_for('admin_experience_delete', eid=e.id) }}" onsubmit="return confirm('Supprimer ?')">
-            <button type="submit" class="tbl-btn tbl-del"><i class="fas fa-trash"></i></button>
-          </form>
+        <td>
+          <div class="tbl-actions">
+            <a href="{{ url_for('admin_experience_edit', eid=e.id) }}" class="tbl-btn tbl-edit">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form method="POST" action="{{ url_for('admin_experience_delete', eid=e.id) }}"
+                  onsubmit="return confirm('Supprimer ?')">
+              <button type="submit" class="tbl-btn tbl-del"><i class="fas fa-trash"></i></button>
+            </form>
+          </div>
         </td>
       </tr>
       {% else %}
-      <tr><td colspan="5" class="tbl-empty">Aucune expérience.</td></tr>
+      <tr>
+        <td colspan="5" class="tbl-empty">Aucune expérience.</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+{# ── VERSION MOBILE : cartes ── #}
+<div class="msg-cards">
+  {% for e in experiences %}
+  <div class="msg-card">
+    <div class="msg-card-top">
+      <div>
+        <span class="msg-card-name">{{ e.company }}</span>
+        <span class="msg-card-email">{{ e.role }}</span>
+      </div>
+      <span class="tag-pill">{{ e.period }}</span>
+    </div>
+
+    <div>
+      <span class="msg-card-date">Ordre : {{ e.order }}</span>
+    </div>
+
+    <div class="msg-card-actions">
+      <a href="{{ url_for('admin_experience_edit', eid=e.id) }}" class="tbl-btn tbl-edit" title="Modifier">
+        <i class="fas fa-edit"></i>
+      </a>
+      <form method="POST" action="{{ url_for('admin_experience_delete', eid=e.id) }}"
+            onsubmit="return confirm('Supprimer ?')">
+        <button type="submit" class="tbl-btn tbl-del" title="Supprimer">
+          <i class="fas fa-trash"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-briefcase"></i>
+    <p>Aucune expérience.</p>
+  </div>
+  {% endfor %}
+</div>
+
 {% endblock %}
