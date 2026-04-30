@@ -16,14 +16,15 @@ from werkzeug.utils import secure_filename
 # ── APP ──────────────────────────────────────────────────────
 app = Flask(__name__)
 
-# Sur Vercel le filesystem est read-only sauf /tmp
-IS_VERCEL = os.environ.get('VERCEL', False)
-_base     = app.root_path
-DB_PATH   = '/tmp/portfolio.db' if IS_VERCEL else os.path.join(_base, 'instance', 'portfolio.db')
+# Use DATABASE_URL from Railway PostgreSQL service
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith('postgres://'):
+    # Fix psycopg2 compatibility: postgres:// → postgresql://
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
 app.config.update(
     SECRET_KEY=os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-prod'),
-    SQLALCHEMY_DATABASE_URI=f'sqlite:///{DB_PATH}',
+    SQLALCHEMY_DATABASE_URI=database_url or 'sqlite:///portfolio.db',  # fallback for local dev
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     UPLOAD_FOLDER=os.path.join('static', 'uploads'),
     MAX_CONTENT_LENGTH=5 * 1024 * 1024,
@@ -500,13 +501,12 @@ def admin_message_delete(mid):
 def admin_stats():
     from sqlalchemy import func, text
 
-    # SQLite: strftime pour grouper par jour (compatible toutes versions)
     daily_raw = db.session.execute(
         text("""
-            SELECT strftime('%Y-%m-%d', created_at) as day,
+            SELECT DATE(created_at) as day,
                    COUNT(*) as count
             FROM visit
-            GROUP BY day
+            GROUP BY DATE(created_at)
             ORDER BY day DESC
             LIMIT 30
         """)
@@ -524,9 +524,6 @@ def admin_stats():
 # ── INIT DB ───────────────────────────────────────────────────
 
 def init_db():
-    # Créer le dossier instance si nécessaire (local)
-    if not IS_VERCEL:
-        os.makedirs('instance', exist_ok=True)
     with app.app_context():
         db.create_all()
 
