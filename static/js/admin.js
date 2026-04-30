@@ -32,10 +32,50 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ── CONFIRM DELETE ── */
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmModalMeta = document.getElementById('confirmModalMeta');
+  const confirmModalText = document.getElementById('confirmModalText');
+  const confirmModalSubmit = document.getElementById('confirmModalSubmit');
+  let pendingConfirmForm = null;
+
+  const closeConfirmModal = () => {
+    if (!confirmModal) return;
+    confirmModal.classList.remove('open');
+    confirmModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    pendingConfirmForm = null;
+  };
+
+  const openConfirmModal = form => {
+    if (!confirmModal || !form) return;
+    pendingConfirmForm = form;
+    if (confirmModalMeta) {
+      confirmModalMeta.textContent = form.dataset.confirmMeta || 'Cette action est irréversible.';
+    }
+    if (confirmModalText) {
+      confirmModalText.textContent = form.dataset.confirm || 'Voulez-vous vraiment supprimer cet élément ?';
+    }
+    confirmModal.classList.add('open');
+    confirmModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  };
+
   document.querySelectorAll('form[data-confirm]').forEach(form => {
     form.addEventListener('submit', e => {
-      if (!confirm(form.dataset.confirm)) e.preventDefault();
+      e.preventDefault();
+      openConfirmModal(form);
     });
+  });
+
+  confirmModalSubmit?.addEventListener('click', () => {
+    if (!pendingConfirmForm) return;
+    const formToSubmit = pendingConfirmForm;
+    closeConfirmModal();
+    formToSubmit.submit();
+  });
+
+  confirmModal?.querySelectorAll('[data-close-confirm-modal]').forEach(btn => {
+    btn.addEventListener('click', closeConfirmModal);
   });
 
   /* ── ACTIVE NAV HIGHLIGHT ── */
@@ -180,6 +220,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && bulletsModal?.classList.contains('open')) {
       closeBulletsModal();
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && confirmModal?.classList.contains('open')) {
+      closeConfirmModal();
     }
   });
 

@@ -94,6 +94,32 @@
   </div>
 </main>
 
+<div class="msg-modal" id="confirmModal" aria-hidden="true">
+  <div class="msg-modal-backdrop" data-close-confirm-modal></div>
+  <div class="msg-modal-dialog confirm-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="msg-modal-head">
+      <div>
+        <h3 id="confirmModalTitle">Confirmer la suppression</h3>
+        <p class="msg-modal-meta">
+          <span id="confirmModalMeta">Cette action est irréversible.</span>
+        </p>
+      </div>
+      <button type="button" class="msg-modal-close" title="Fermer" data-close-confirm-modal>
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="msg-modal-body">
+      <p class="confirm-modal-text" id="confirmModalText">Voulez-vous vraiment supprimer cet élément ?</p>
+      <div class="confirm-modal-actions">
+        <button type="button" class="btn-cancel btn-cancel-modal" data-close-confirm-modal>Annuler</button>
+        <button type="button" class="btn-danger" id="confirmModalSubmit">
+          <i class="fas fa-trash"></i> Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 </body>
 </html>

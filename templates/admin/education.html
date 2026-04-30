@@ -36,7 +36,8 @@
               <i class="fas fa-edit"></i>
             </a>
             <form method="POST" action="{{ url_for('admin_education_delete', eid=e.id) }}"
-                  onsubmit="return confirm('Supprimer cette formation ?')">
+                  data-confirm="Supprimer cette formation ?"
+                  data-confirm-meta="{{ e.degree }}">
               <button type="submit" class="tbl-btn tbl-del">
                 <i class="fas fa-trash"></i>
               </button>
@@ -78,7 +79,8 @@
 
       <form method="POST"
             action="{{ url_for('admin_education_delete', eid=e.id) }}"
-            onsubmit="return confirm('Supprimer cette formation ?')">
+            data-confirm="Supprimer cette formation ?"
+            data-confirm-meta="{{ e.degree }}">
         <button type="submit"
                 class="tbl-btn tbl-del"
                 title="Supprimer">
