@@ -240,12 +240,17 @@ document.addEventListener('DOMContentLoaded', () => {
      11. CONTACT FORM
      HTML: id="btnSend", id="formOk" (étaient "btnSubmit", "formSuccess")
   ════════════════════════════════════════ */
-  const btnForm = document.getElementById('btnSend'); // ✅ CORRIGÉ
-  if (btnForm) {
-    btnForm.addEventListener('click', () => {
-      const name     = document.getElementById('cName')?.value.trim();
-      const email    = document.getElementById('cEmail')?.value.trim();
-      const msg      = document.getElementById('cMsg')?.value.trim();
+  const contactForm = document.getElementById('contactForm');
+  const btnForm = document.getElementById('btnSend');
+  const formOk = document.getElementById('formOk');
+
+  if (contactForm && btnForm) {
+    contactForm.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const name     = document.getElementById('cName')?.value.trim() || '';
+      const email    = document.getElementById('cEmail')?.value.trim() || '';
+      const msg      = document.getElementById('cMsg')?.value.trim() || '';
       const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       clearErrors();
@@ -255,17 +260,38 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!msg)                  { showError('cMsg',   'Message requis'); valid = false; }
       if (!valid) return;
 
+      const originalHtml = btnForm.innerHTML;
       btnForm.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
       btnForm.disabled  = true;
 
-      setTimeout(() => {
-        // ✅ CORRIGÉ : formWrap n'existe pas dans le HTML, on cache les inputs directement
-        document.getElementById('formOk').style.display = 'block'; // ✅ CORRIGÉ "formSuccess" → "formOk"
-        btnForm.closest('.form-card').querySelector('#formWrap, form, .fg, button')
-        // Solution robuste : cacher tout le contenu sauf formOk
-        const formCard = btnForm.closest('.form-card');
-        formCard.querySelectorAll(':scope > *:not(#formOk)').forEach(el => el.style.display = 'none');
-      }, 1200);
+      try {
+        const response = await fetch(contactForm.action, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            message: msg
+          })
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || 'Impossible d\'envoyer le message.');
+        }
+
+        contactForm.reset();
+        contactForm.style.display = 'none';
+        if (formOk) formOk.style.display = 'block';
+      } catch (error) {
+        showFormMessage(error.message || 'Une erreur est survenue pendant l\'envoi.');
+      } finally {
+        btnForm.innerHTML = originalHtml;
+        btnForm.disabled = false;
+      }
     });
   }
 
@@ -286,6 +312,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const el = document.getElementById(id);
       if (el) el.style.borderColor = '';
     });
+  }
+
+  function showFormMessage(msg) {
+    const formWrap = document.getElementById('formWrap');
+    if (!formWrap) return;
+
+    let box = formWrap.querySelector('.form-feedback');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'form-feedback form-err';
+      box.style.cssText = 'margin-top:1rem;color:#e07070;font-size:.82rem;font-family:JetBrains Mono,monospace;';
+      formWrap.appendChild(box);
+    }
+    box.textContent = msg;
   }
 
   /* ════════════════════════════════════════

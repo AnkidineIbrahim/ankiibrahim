@@ -230,12 +230,14 @@
     </div>
     <div class="contact-right reveal">
       <div class="form-card">
-        <div id="formWrap">
-          <div class="fg"><label>Votre nom</label><input type="text" id="cName" placeholder="John Doe"/></div>
-          <div class="fg"><label>Email</label><input type="email" id="cEmail" placeholder="john@exemple.com"/></div>
-          <div class="fg"><label>Message</label><textarea id="cMsg" placeholder="Parlez-moi de votre projet..."></textarea></div>
-          <button class="btn-submit" id="btnSend"><i class="fas fa-paper-plane"></i> Envoyer</button>
-        </div>
+        <form id="contactForm" method="POST" action="{{ url_for('contact') }}">
+          <div id="formWrap">
+            <div class="fg"><label for="cName">Votre nom</label><input type="text" id="cName" name="name" placeholder="John Doe" required/></div>
+            <div class="fg"><label for="cEmail">Email</label><input type="email" id="cEmail" name="email" placeholder="john@exemple.com" required/></div>
+            <div class="fg"><label for="cMsg">Message</label><textarea id="cMsg" name="message" placeholder="Parlez-moi de votre projet..." required></textarea></div>
+            <button type="submit" class="btn-submit" id="btnSend"><i class="fas fa-paper-plane"></i> Envoyer</button>
+          </div>
+        </form>
         <div class="form-ok" id="formOk">
           <i class="fas fa-check-circle"></i>
           <strong>Message envoyé !</strong>

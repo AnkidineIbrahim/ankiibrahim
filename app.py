@@ -167,11 +167,14 @@ def index():
 
 @app.route('/contact', methods=['POST'])
 def contact():
-    name    = request.form.get('name', '').strip()
-    email   = request.form.get('email', '').strip()
-    content = request.form.get('message', '').strip()
+    payload = request.get_json(silent=True) or request.form
+    name    = (payload.get('name') or '').strip()
+    email   = (payload.get('email') or '').strip()
+    content = (payload.get('message') or '').strip()
     if not (name and email and content):
         return jsonify({'ok': False, 'error': 'Champs manquants'}), 400
+    if '@' not in email or '.' not in email.split('@')[-1]:
+        return jsonify({'ok': False, 'error': 'Adresse email invalide'}), 400
     msg = Message(name=name, email=email, content=content)
     db.session.add(msg); db.session.commit()
     return jsonify({'ok': True})
