@@ -2,9 +2,16 @@
 {% block title %}Messages{% endblock %}
 {% block page_title %}Messages reçus{% endblock %}
 {% block content %}
-<div class="table-card">
+
+{# ── VERSION DESKTOP : tableau ── #}
+<div class="table-card msg-table-wrap">
   <table class="admin-table">
-    <thead><tr><th>Statut</th><th>Nom</th><th>Email</th><th>Message</th><th>Date</th><th>Actions</th></tr></thead>
+    <thead>
+      <tr>
+        <th>Statut</th><th>Nom</th><th>Email</th>
+        <th>Message</th><th>Date</th><th>Actions</th>
+      </tr>
+    </thead>
     <tbody>
       {% for m in messages %}
       <tr class="{% if not m.read %}row-unread{% endif %}">
@@ -18,29 +25,35 @@
         <td><strong>{{ m.name }}</strong></td>
         <td><a href="mailto:{{ m.email }}">{{ m.email }}</a></td>
         <td class="msg-cell">
-          <button
-            type="button"
-            class="tbl-btn tbl-view js-open-message"
+          <button type="button" class="tbl-btn tbl-view js-open-message"
             title="Voir le message"
             data-message-name="{{ m.name }}"
             data-message-email="{{ m.email }}"
             data-message-date="{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}"
-            data-message-content="{{ m.content }}"
-          >
+            data-message-content="{{ m.content }}">
             <i class="fas fa-eye"></i>
           </button>
         </td>
         <td><span class="date-sm">{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}</span></td>
-        <td class="tbl-actions">
-          {% if not m.read %}
-          <form method="POST" action="{{ url_for('admin_message_read', mid=m.id) }}">
-            <button type="submit" class="tbl-btn tbl-edit" title="Marquer comme lu"><i class="fas fa-check"></i></button>
-          </form>
-          {% endif %}
-          <a href="mailto:{{ m.email }}" class="tbl-btn tbl-reply" title="Répondre"><i class="fas fa-reply"></i></a>
-          <form method="POST" action="{{ url_for('admin_message_delete', mid=m.id) }}" onsubmit="return confirm('Supprimer ce message ?')">
-            <button type="submit" class="tbl-btn tbl-del" title="Supprimer"><i class="fas fa-trash"></i></button>
-          </form>
+        <td>
+          <div class="tbl-actions">
+            {% if not m.read %}
+            <form method="POST" action="{{ url_for('admin_message_read', mid=m.id) }}">
+              <button type="submit" class="tbl-btn tbl-edit" title="Marquer comme lu">
+                <i class="fas fa-check"></i>
+              </button>
+            </form>
+            {% endif %}
+            <a href="mailto:{{ m.email }}" class="tbl-btn tbl-reply" title="Répondre">
+              <i class="fas fa-reply"></i>
+            </a>
+            <form method="POST" action="{{ url_for('admin_message_delete', mid=m.id) }}"
+                  onsubmit="return confirm('Supprimer ce message ?')">
+              <button type="submit" class="tbl-btn tbl-del" title="Supprimer">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
         </td>
       </tr>
       {% else %}
@@ -50,6 +63,65 @@
   </table>
 </div>
 
+{# ── VERSION MOBILE : cartes ── #}
+<div class="msg-cards">
+  {% for m in messages %}
+  <div class="msg-card {% if not m.read %}unread{% endif %}">
+    <div class="msg-card-top">
+      <div>
+        <span class="msg-card-name">{{ m.name }}</span>
+        <span class="msg-card-email">{{ m.email }}</span>
+      </div>
+      <span class="msg-card-date">{{ m.created_at.strftime('%d/%m/%Y') }}</span>
+    </div>
+
+    <div>
+      {% if m.read %}
+        <span class="status-badge status-read"><i class="fas fa-check"></i> Lu</span>
+      {% else %}
+        <span class="status-badge status-new"><i class="fas fa-circle"></i> Nouveau</span>
+      {% endif %}
+    </div>
+
+    <div class="msg-card-actions">
+      <button type="button" class="tbl-btn tbl-view js-open-message"
+        title="Voir"
+        data-message-name="{{ m.name }}"
+        data-message-email="{{ m.email }}"
+        data-message-date="{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}"
+        data-message-content="{{ m.content }}">
+        <i class="fas fa-eye"></i>
+      </button>
+
+      {% if not m.read %}
+      <form method="POST" action="{{ url_for('admin_message_read', mid=m.id) }}">
+        <button type="submit" class="tbl-btn tbl-edit" title="Marquer comme lu">
+          <i class="fas fa-check"></i>
+        </button>
+      </form>
+      {% endif %}
+
+      <a href="mailto:{{ m.email }}" class="tbl-btn tbl-reply" title="Répondre">
+        <i class="fas fa-reply"></i>
+      </a>
+
+      <form method="POST" action="{{ url_for('admin_message_delete', mid=m.id) }}"
+            onsubmit="return confirm('Supprimer ce message ?')">
+        <button type="submit" class="tbl-btn tbl-del" title="Supprimer">
+          <i class="fas fa-trash"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-inbox"></i>
+    <p>Aucun message reçu.</p>
+  </div>
+  {% endfor %}
+</div>
+
+{# ── MODAL ── #}
 <div class="msg-modal" id="messageModal" aria-hidden="true">
   <div class="msg-modal-backdrop" data-close-message-modal></div>
   <div class="msg-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="messageModalTitle">
@@ -71,4 +143,5 @@
     </div>
   </div>
 </div>
+
 {% endblock %}

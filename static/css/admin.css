@@ -673,3 +673,47 @@ body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text
   .admin-content { padding: 1rem; }
   .kpi-grid { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   MESSAGES — CARD VIEW (mobile)
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Masquer la table, afficher les cartes */
+  .msg-table-wrap { display: none; }
+  .msg-cards      { display: flex; flex-direction: column; gap: .75rem; padding: .75rem; }
+
+  .msg-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+  }
+  .msg-card.unread { border-left: 3px solid var(--gold); background: rgba(200,165,60,.03); }
+
+  .msg-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+  }
+  .msg-card-name  { font-weight: 700; font-size: .92rem; color: var(--text); }
+  .msg-card-email { font-size: .78rem; color: var(--text3); }
+  .msg-card-date  { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--text3); white-space: nowrap; }
+
+  .msg-card-actions {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    flex-wrap: wrap;
+  }
+
+  /* Sur desktop : masquer les cartes */
+}
+
+@media (min-width: 769px) {
+  .msg-table-wrap { display: block; }
+  .msg-cards      { display: none; }
+}
