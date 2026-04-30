@@ -7,6 +7,6 @@ if __name__ == '__main__':
     init_db()
     print("✅ Base de données initialisée avec succès !")
     print("🔑 Identifiants admin par défaut :")
-    print("   Utilisateur : admin")
-    print("   Mot de passe : admin123")
+    print("   Utilisateur : ankidine")
+    print("   Mot de passe : ibrahim123")
     print("⚠️  Changez le mot de passe après votre première connexion !")
