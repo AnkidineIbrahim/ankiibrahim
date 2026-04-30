@@ -21,7 +21,7 @@
         <em class="name-em">{{ profile.name.split()[1] if profile.name.split()|length > 1 else '' }}</em>
       </h1>
       <p class="hero-role"><span id="heroRole">{{ profile.title }}</span><span class="typed-cursor"></span></p>
-      <p class="hero-desc">{{ profile.bio }}</p>
+      <p class="hero-desc">{{ profile.bio | nl2br }}</p>
       <div class="hero-actions">
         <a href="#projects" class="btn-primary"><i class="fas fa-arrow-right"></i> Mes projets</a>
         <a href="{{ url_for('download_cv') }}" class="btn-download-hero">
@@ -67,7 +67,7 @@
       <h2 class="sec-title reveal">Qui suis-je <em>vraiment</em> ?</h2>
       <div class="sec-div"></div>
       <div class="about-text reveal">
-        <p>{{ profile.bio }}</p>
+        {{ profile.bio | paragraphs }}
         <p>Rigueur, veille technologique permanente et sens du détail sont les moteurs de mon travail quotidien.</p>
       </div>
       <div class="chips reveal">

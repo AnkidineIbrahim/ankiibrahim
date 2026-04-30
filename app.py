@@ -10,6 +10,7 @@ from flask import (Flask, render_template, redirect, url_for,
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin, login_user,
                          logout_user, login_required, current_user)
+from markupsafe import Markup, escape
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -150,6 +151,24 @@ def record_visit(page='home'):
         db.session.add(v); db.session.commit()
     except Exception:
         pass
+
+@app.template_filter('nl2br')
+def nl2br_filter(value):
+    text = escape((value or '').replace('\r\n', '\n'))
+    return Markup(str(text).replace('\n', '<br>\n'))
+
+@app.template_filter('paragraphs')
+def paragraphs_filter(value):
+    text = (value or '').replace('\r\n', '\n').strip()
+    if not text:
+        return Markup('')
+
+    blocks = [block.strip() for block in text.split('\n\n') if block.strip()]
+    html = []
+    for block in blocks:
+        escaped = escape(block)
+        html.append(f'<p>{str(escaped).replace(chr(10), "<br>")}</p>')
+    return Markup(''.join(html))
 
 # ── PUBLIC ROUTES ─────────────────────────────────────────────
 
