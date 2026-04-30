@@ -2,34 +2,88 @@
 {% block title %}Projets{% endblock %}
 {% block page_title %}Projets{% endblock %}
 {% block content %}
+
 <div class="list-head">
   <p>{{ projects|length }} projet(s) publié(s)</p>
-  <a href="{{ url_for('admin_project_new') }}" class="btn-submit"><i class="fas fa-plus"></i> Nouveau projet</a>
+  <a href="{{ url_for('admin_project_new') }}" class="btn-submit">
+    <i class="fas fa-plus"></i> Nouveau projet
+  </a>
 </div>
-<div class="table-card">
+
+{# ── VERSION DESKTOP : tableau ── #}
+<div class="table-card msg-table-wrap">
   <table class="admin-table">
-    <thead><tr><th>#</th><th>Titre</th><th>Tag</th><th>Technologies</th><th>Ordre</th><th>Actions</th></tr></thead>
+    <thead>
+      <tr>
+        <th>#</th><th>Titre</th><th>Tag</th>
+        <th>Technologies</th><th>Ordre</th><th>Actions</th>
+      </tr>
+    </thead>
     <tbody>
       {% for p in projects %}
       <tr>
         <td><span class="tbl-num">{{ p.number }}</span></td>
         <td><strong>{{ p.title }}</strong></td>
         <td><span class="tag-pill">{{ p.tag }}</span></td>
-        <td>
-          {% for t in p.get_tech() %}<span class="tech-sm">{{ t }}</span>{% endfor %}
-        </td>
+        <td>{% for t in p.get_tech() %}<span class="tech-sm">{{ t }}</span>{% endfor %}</td>
         <td>{{ p.order }}</td>
-        <td class="tbl-actions">
-          <a href="{{ url_for('admin_project_edit', pid=p.id) }}" class="tbl-btn tbl-edit"><i class="fas fa-edit"></i></a>
-          <form method="POST" action="{{ url_for('admin_project_delete', pid=p.id) }}" onsubmit="return confirm('Supprimer ce projet ?')">
-            <button type="submit" class="tbl-btn tbl-del"><i class="fas fa-trash"></i></button>
-          </form>
+        <td>
+          <div class="tbl-actions">
+            <a href="{{ url_for('admin_project_edit', pid=p.id) }}" class="tbl-btn tbl-edit">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form method="POST" action="{{ url_for('admin_project_delete', pid=p.id) }}"
+                  onsubmit="return confirm('Supprimer ce projet ?')">
+              <button type="submit" class="tbl-btn tbl-del"><i class="fas fa-trash"></i></button>
+            </form>
+          </div>
         </td>
       </tr>
       {% else %}
-      <tr><td colspan="6" class="tbl-empty">Aucun projet. <a href="{{ url_for('admin_project_new') }}">Ajouter le premier →</a></td></tr>
+      <tr>
+        <td colspan="6" class="tbl-empty">
+          Aucun projet. <a href="{{ url_for('admin_project_new') }}">Ajouter le premier →</a>
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+{# ── VERSION MOBILE : cartes ── #}
+<div class="msg-cards">
+  {% for p in projects %}
+  <div class="msg-card">
+    <div class="msg-card-top">
+      <div>
+        <span class="msg-card-name">{{ p.title }}</span>
+        <span class="msg-card-email">#{{ p.number }} &middot; Ordre {{ p.order }}</span>
+      </div>
+      <span class="tag-pill">{{ p.tag }}</span>
+    </div>
+
+    <div>
+      {% for t in p.get_tech() %}<span class="tech-sm">{{ t }}</span>{% endfor %}
+    </div>
+
+    <div class="msg-card-actions">
+      <a href="{{ url_for('admin_project_edit', pid=p.id) }}" class="tbl-btn tbl-edit" title="Modifier">
+        <i class="fas fa-edit"></i>
+      </a>
+      <form method="POST" action="{{ url_for('admin_project_delete', pid=p.id) }}"
+            onsubmit="return confirm('Supprimer ce projet ?')">
+        <button type="submit" class="tbl-btn tbl-del" title="Supprimer">
+          <i class="fas fa-trash"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-folder-open"></i>
+    <p>Aucun projet. <a href="{{ url_for('admin_project_new') }}" style="color:var(--gold)">Ajouter le premier →</a></p>
+  </div>
+  {% endfor %}
+</div>
+
 {% endblock %}

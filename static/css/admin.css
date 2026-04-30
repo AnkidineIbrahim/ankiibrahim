@@ -580,6 +580,7 @@ body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text
   letter-spacing: .08em; text-transform: uppercase;
   cursor: pointer; transition: background .2s, transform .15s, box-shadow .2s;
   box-shadow: 0 4px 16px rgba(200,165,60,.25);
+  text-decoration: none; /* ← ajout */
 }
 .btn-submit:hover { background: var(--gold-lt); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,165,60,.35); }
 .w100 { width: 100%; justify-content: center; }
