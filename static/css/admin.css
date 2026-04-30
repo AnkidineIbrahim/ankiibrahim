@@ -325,7 +325,7 @@ body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text
 
 .table-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden;
+  border-radius: var(--radius); overflow-x: auto; overflow-y: hidden;
 }
 .admin-table { width: 100%; border-collapse: collapse; }
 .admin-table thead { background: var(--bg2); }
@@ -348,7 +348,11 @@ body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text
 }
 .tbl-empty { text-align: center; color: var(--text3); padding: 2rem !important; }
 .tbl-empty a { color: var(--gold); text-decoration: none; font-weight: 600; }
-.msg-cell { max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg-cell {
+  width: 90px;
+  min-width: 90px;
+  text-align: center;
+}
 
 .tag-pill {
   background: var(--gold-dim); color: var(--gold);
@@ -365,7 +369,7 @@ body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text
 .date-sm    { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--text3); }
 .icon-preview { color: var(--gold); font-size: 1rem; }
 
-.tbl-actions { display: flex; align-items: center; gap: .4rem; }
+.tbl-actions { display: flex; align-items: flex-start; gap: .4rem; }
 .tbl-btn {
   width: 32px; height: 32px; border-radius: 7px; border: 1px solid var(--border);
   background: var(--bg); cursor: pointer; font-size: .8rem;
@@ -375,6 +379,7 @@ body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text
 .tbl-edit:hover  { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
 .tbl-del:hover   { border-color: var(--red);  color: var(--red);  background: rgba(224,85,85,.1); }
 .tbl-reply:hover { border-color: var(--blue); color: var(--blue); background: rgba(76,142,175,.1); }
+.tbl-view:hover  { border-color: var(--navy); color: var(--navy); background: rgba(10,22,40,.08); }
 
 .status-badge {
   display: inline-flex; align-items: center; gap: .3rem;
@@ -382,6 +387,96 @@ body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text
 }
 .status-new  { background: rgba(200,165,60,.15); color: var(--gold); }
 .status-read { background: rgba(76,175,120,.1);  color: var(--green); }
+
+.msg-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .2s ease, visibility .2s ease;
+  z-index: 1200;
+}
+.msg-modal.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.msg-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10,22,40,.55);
+  backdrop-filter: blur(4px);
+}
+.msg-modal-dialog {
+  position: relative;
+  width: min(720px, 100%);
+  max-height: min(85vh, 820px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(10,22,40,.22);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.msg-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.3rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(200,165,60,.08), rgba(200,165,60,.02));
+}
+.msg-modal-head h3 {
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: .35rem;
+}
+.msg-modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  color: var(--text3);
+  font-size: .78rem;
+}
+.msg-modal-meta strong {
+  color: var(--text);
+}
+.msg-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text2);
+  cursor: pointer;
+  transition: .2s;
+}
+.msg-modal-close:hover {
+  border-color: var(--red);
+  color: var(--red);
+  background: rgba(224,85,85,.08);
+}
+.msg-modal-body {
+  padding: 1.5rem;
+  overflow: auto;
+}
+.msg-modal-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.8;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+}
 
 /* ============================================================
    FORMS  (classes: .fg, .fg-row, .form-hint, .file-label,

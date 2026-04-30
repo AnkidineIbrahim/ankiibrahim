@@ -77,4 +77,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, 200);
 
+  /* —— MESSAGE MODAL —— */
+  const messageModal = document.getElementById('messageModal');
+  const modalName = document.getElementById('modalMessageName');
+  const modalEmail = document.getElementById('modalMessageEmail');
+  const modalDate = document.getElementById('modalMessageDate');
+  const modalContent = document.getElementById('modalMessageContent');
+
+  const closeMessageModal = () => {
+    if (!messageModal) return;
+    messageModal.classList.remove('open');
+    messageModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+
+  const openMessageModal = trigger => {
+    if (!messageModal || !trigger) return;
+    if (modalName) modalName.textContent = trigger.dataset.messageName || '-';
+    if (modalEmail) modalEmail.textContent = trigger.dataset.messageEmail || '-';
+    if (modalDate) modalDate.textContent = trigger.dataset.messageDate || '-';
+    if (modalContent) modalContent.textContent = trigger.dataset.messageContent || '';
+    messageModal.classList.add('open');
+    messageModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  };
+
+  document.querySelectorAll('.js-open-message').forEach(btn => {
+    btn.addEventListener('click', () => openMessageModal(btn));
+  });
+
+  messageModal?.querySelectorAll('[data-close-message-modal]').forEach(btn => {
+    btn.addEventListener('click', closeMessageModal);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && messageModal?.classList.contains('open')) {
+      closeMessageModal();
+    }
+  });
+
 });

@@ -17,7 +17,19 @@
         </td>
         <td><strong>{{ m.name }}</strong></td>
         <td><a href="mailto:{{ m.email }}">{{ m.email }}</a></td>
-        <td class="msg-cell">{{ m.content[:100] }}{% if m.content|length > 100 %}…{% endif %}</td>
+        <td class="msg-cell">
+          <button
+            type="button"
+            class="tbl-btn tbl-view js-open-message"
+            title="Voir le message"
+            data-message-name="{{ m.name }}"
+            data-message-email="{{ m.email }}"
+            data-message-date="{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}"
+            data-message-content="{{ m.content }}"
+          >
+            <i class="fas fa-eye"></i>
+          </button>
+        </td>
         <td><span class="date-sm">{{ m.created_at.strftime('%d/%m/%Y %H:%M') }}</span></td>
         <td class="tbl-actions">
           {% if not m.read %}
@@ -36,5 +48,27 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
+
+<div class="msg-modal" id="messageModal" aria-hidden="true">
+  <div class="msg-modal-backdrop" data-close-message-modal></div>
+  <div class="msg-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="messageModalTitle">
+    <div class="msg-modal-head">
+      <div>
+        <h3 id="messageModalTitle">Message reçu</h3>
+        <p class="msg-modal-meta">
+          <strong id="modalMessageName">-</strong>
+          <span id="modalMessageEmail">-</span>
+          <span id="modalMessageDate">-</span>
+        </p>
+      </div>
+      <button type="button" class="msg-modal-close" title="Fermer" data-close-message-modal>
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="msg-modal-body">
+      <div class="msg-modal-content" id="modalMessageContent"></div>
+    </div>
+  </div>
 </div>
 {% endblock %}
