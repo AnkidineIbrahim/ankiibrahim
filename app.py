@@ -514,12 +514,26 @@ def admin_stats():
             LIMIT 30
         """)
     ).fetchall()
-    # Inverser pour ordre chronologique
-    daily = list(reversed(daily_raw))
+    # Convertir en listes simples pour un rendu Jinja/JS fiable.
+    daily = [
+        {
+            'day': str(day),
+            'count': int(count or 0),
+        }
+        for day, count in reversed(daily_raw)
+    ]
 
-    pages = db.session.query(
+    pages_raw = db.session.query(
         Visit.page, func.count(Visit.id).label('count')
-    ).group_by(Visit.page).all()
+    ).group_by(Visit.page).order_by(func.count(Visit.id).desc()).all()
+
+    pages = [
+        {
+            'page': page or 'home',
+            'count': int(count or 0),
+        }
+        for page, count in pages_raw
+    ]
 
     return render_template('admin/stats.html', daily=daily, pages=pages,
                            total=Visit.query.count())

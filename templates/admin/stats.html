@@ -10,43 +10,60 @@
 </div>
 
 <div class="dash-grid mt">
-  <!-- Visites par jour -->
   <div class="dash-card">
     <div class="dash-card-head"><h3><i class="fas fa-chart-line"></i> Visites par jour</h3></div>
     {% if daily %}
     <div class="chart-wrap">
-      <div class="bar-chart" id="barChart" data-values="{{ daily|map(attribute=1)|list|tojson }}" data-labels="{{ daily|map(attribute=0)|list|tojson }}"></div>
+      <div
+        class="bar-chart"
+        id="barChart"
+        data-values='{{ daily | map(attribute="count") | list | tojson }}'
+        data-labels='{{ daily | map(attribute="day") | list | tojson }}'
+      ></div>
     </div>
     {% else %}
     <div class="empty-state"><i class="fas fa-chart-line"></i><p>Données insuffisantes</p></div>
     {% endif %}
   </div>
 
-  <!-- Répartition par page -->
   <div class="dash-card">
     <div class="dash-card-head"><h3><i class="fas fa-chart-pie"></i> Par page</h3></div>
     {% set total_v = total or 1 %}
+    {% if pages %}
     <div class="pages-list">
-      {% for page, count in pages %}
+      {% for item in pages %}
       <div class="page-row">
-        <span class="page-name">/{{ page }}</span>
+        <span class="page-name">/{{ item.page }}</span>
         <div class="page-bar-wrap">
-          <div class="page-bar" style="width:{{ [(count / total_v * 100)|int, 100]|min }}%"></div>
+          <div class="page-bar" style="width:{{ [(item.count / total_v * 100)|int, 100]|min }}%"></div>
         </div>
-        <span class="page-count">{{ count }} ({{ (count / total_v * 100)|int }}%)</span>
+        <span class="page-count">{{ item.count }} ({{ (item.count / total_v * 100)|int }}%)</span>
       </div>
       {% endfor %}
     </div>
+    {% else %}
+    <div class="empty-state"><i class="fas fa-chart-pie"></i><p>Aucune donnée</p></div>
+    {% endif %}
   </div>
 </div>
 
 <script>
-// Bar chart simple
 document.addEventListener('DOMContentLoaded', () => {
   const el = document.getElementById('barChart');
   if (!el) return;
-  const vals   = JSON.parse(el.dataset.values || '[]');
-  const labels = JSON.parse(el.dataset.labels || '[]');
+
+  let vals = [];
+  let labels = [];
+
+  try {
+    vals = JSON.parse(el.dataset.values || '[]');
+    labels = JSON.parse(el.dataset.labels || '[]');
+  } catch (error) {
+    console.error('Impossible de lire les statistiques de visites.', error);
+    el.innerHTML = '<p class="bar-chart-error">Données du graphique invalides.</p>';
+    return;
+  }
+
   if (!vals.length) return;
   const max = Math.max(...vals) || 1;
   el.innerHTML = vals.map((v, i) => `
