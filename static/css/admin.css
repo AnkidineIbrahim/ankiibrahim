@@ -477,6 +477,42 @@ body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text
   border-radius: 14px;
   padding: 1rem 1.1rem;
 }
+.modal-bullets-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin: 0;
+  padding: 0;
+}
+.modal-bullets-list li {
+  position: relative;
+  padding: .9rem 1rem .9rem 2.2rem;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.modal-bullets-list li::before {
+  content: '';
+  position: absolute;
+  top: 1.15rem;
+  left: 1rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 4px rgba(200,165,60,.15);
+}
+.modal-bullets-empty {
+  color: var(--text3);
+  text-align: center;
+  padding: 1.2rem;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: var(--bg);
+}
 
 /* ============================================================
    FORMS  (classes: .fg, .fg-row, .form-hint, .file-label,

@@ -116,4 +116,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  /* —— EXPERIENCE BULLETS MODAL —— */
+  const bulletsModal = document.getElementById('experienceBulletsModal');
+  const bulletsCompany = document.getElementById('experienceBulletsCompany');
+  const bulletsRole = document.getElementById('experienceBulletsRole');
+  const bulletsPeriod = document.getElementById('experienceBulletsPeriod');
+  const bulletsList = document.getElementById('experienceBulletsList');
+
+  const closeBulletsModal = () => {
+    if (!bulletsModal) return;
+    bulletsModal.classList.remove('open');
+    bulletsModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+
+  const renderBullets = bullets => {
+    if (!bulletsList) return;
+    bulletsList.innerHTML = '';
+
+    if (!Array.isArray(bullets) || bullets.length === 0) {
+      const empty = document.createElement('li');
+      empty.className = 'modal-bullets-empty';
+      empty.textContent = 'Aucun bullet renseigné pour cette expérience.';
+      bulletsList.appendChild(empty);
+      return;
+    }
+
+    bullets.forEach(text => {
+      const item = document.createElement('li');
+      item.textContent = text;
+      bulletsList.appendChild(item);
+    });
+  };
+
+  const openBulletsModal = trigger => {
+    if (!bulletsModal || !trigger) return;
+
+    let bullets = [];
+    try {
+      bullets = JSON.parse(trigger.dataset.experienceBullets || '[]');
+    } catch (error) {
+      bullets = [];
+    }
+
+    if (bulletsCompany) bulletsCompany.textContent = trigger.dataset.experienceCompany || '-';
+    if (bulletsRole) bulletsRole.textContent = trigger.dataset.experienceRole || '-';
+    if (bulletsPeriod) bulletsPeriod.textContent = trigger.dataset.experiencePeriod || '-';
+    renderBullets(bullets);
+
+    bulletsModal.classList.add('open');
+    bulletsModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  };
+
+  document.querySelectorAll('.js-open-bullets').forEach(btn => {
+    btn.addEventListener('click', () => openBulletsModal(btn));
+  });
+
+  bulletsModal?.querySelectorAll('[data-close-bullets-modal]').forEach(btn => {
+    btn.addEventListener('click', closeBulletsModal);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && bulletsModal?.classList.contains('open')) {
+      closeBulletsModal();
+    }
+  });
+
 });

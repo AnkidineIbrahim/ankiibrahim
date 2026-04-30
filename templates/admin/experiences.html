@@ -15,7 +15,7 @@
   <table class="admin-table">
     <thead>
       <tr>
-        <th>Entreprise</th><th>Rôle</th><th>Période</th><th>Ordre</th><th>Actions</th>
+        <th>Entreprise</th><th>Rôle</th><th>Période</th><th>Bullets</th><th>Ordre</th><th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -24,6 +24,16 @@
         <td><strong>{{ e.company }}</strong></td>
         <td>{{ e.role }}</td>
         <td><span class="tag-pill">{{ e.period }}</span></td>
+        <td class="msg-cell">
+          <button type="button" class="tbl-btn tbl-view js-open-bullets"
+            title="Voir les bullets"
+            data-experience-company="{{ e.company }}"
+            data-experience-role="{{ e.role }}"
+            data-experience-period="{{ e.period }}"
+            data-experience-bullets='{{ e.get_bullets()|tojson }}'>
+            <i class="fas fa-list-ul"></i>
+          </button>
+        </td>
         <td>{{ e.order }}</td>
         <td>
           <div class="tbl-actions">
@@ -39,7 +49,7 @@
       </tr>
       {% else %}
       <tr>
-        <td colspan="5" class="tbl-empty">Aucune expérience.</td>
+        <td colspan="6" class="tbl-empty">Aucune expérience.</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -63,6 +73,13 @@
     </div>
 
     <div class="msg-card-actions">
+      <button type="button" class="tbl-btn tbl-view js-open-bullets" title="Voir les bullets"
+        data-experience-company="{{ e.company }}"
+        data-experience-role="{{ e.role }}"
+        data-experience-period="{{ e.period }}"
+        data-experience-bullets='{{ e.get_bullets()|tojson }}'>
+        <i class="fas fa-list-ul"></i>
+      </button>
       <a href="{{ url_for('admin_experience_edit', eid=e.id) }}" class="tbl-btn tbl-edit" title="Modifier">
         <i class="fas fa-edit"></i>
       </a>
@@ -80,6 +97,28 @@
     <p>Aucune expérience.</p>
   </div>
   {% endfor %}
+</div>
+
+<div class="msg-modal" id="experienceBulletsModal" aria-hidden="true">
+  <div class="msg-modal-backdrop" data-close-bullets-modal></div>
+  <div class="msg-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="experienceBulletsTitle">
+    <div class="msg-modal-head">
+      <div>
+        <h3 id="experienceBulletsTitle">Bullets de l'expérience</h3>
+        <p class="msg-modal-meta">
+          <strong id="experienceBulletsCompany">-</strong>
+          <span id="experienceBulletsRole">-</span>
+          <span id="experienceBulletsPeriod">-</span>
+        </p>
+      </div>
+      <button type="button" class="msg-modal-close" title="Fermer" data-close-bullets-modal>
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="msg-modal-body">
+      <ul class="modal-bullets-list" id="experienceBulletsList"></ul>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
