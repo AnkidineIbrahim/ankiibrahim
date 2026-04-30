@@ -703,6 +703,40 @@ section { padding: 110px 5vw; position: relative; }
   color: var(--gold); margin-bottom: 1.5rem;
   display: flex; align-items: center; gap: .5rem;
 }
+.availability-card {
+  display: flex; align-items: flex-start; gap: .9rem;
+  padding: 1rem 1.1rem; margin-bottom: 1.4rem;
+  border-radius: var(--radius); border: 1px solid var(--border);
+  background: var(--surface);
+}
+.availability-card strong {
+  display: block; margin-bottom: .2rem;
+  font-size: .92rem; color: var(--text);
+}
+.availability-card span {
+  display: block; color: var(--text-2);
+  font-size: .85rem; line-height: 1.65;
+}
+.availability-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  margin-top: .32rem; flex-shrink: 0;
+}
+.availability-card.is-available {
+  border-color: rgba(93, 201, 137, .28);
+  background: rgba(93, 201, 137, .08);
+}
+.availability-card.is-available .availability-dot {
+  background: #5dc989;
+  box-shadow: 0 0 0 6px rgba(93, 201, 137, .14);
+}
+.availability-card.is-busy {
+  border-color: rgba(200,165,60,.26);
+  background: rgba(200,165,60,.08);
+}
+.availability-card.is-busy .availability-dot {
+  background: var(--gold);
+  box-shadow: 0 0 0 6px rgba(200,165,60,.12);
+}
 
 .info-list { list-style: none; }
 .info-list li {
@@ -1006,6 +1040,21 @@ section { padding: 110px 5vw; position: relative; }
 
 .clink-cv { border-color: rgba(200,165,60,.3); background: var(--gold-dim); }
 .clink-cv:hover { border-color: var(--gold); }
+.clink-status { cursor: default; }
+.clink-status:hover { transform: none; }
+.clink-status.is-available {
+  border-color: rgba(93, 201, 137, .28);
+  background: rgba(93, 201, 137, .08);
+}
+.clink-status.is-available .clink-icon {
+  color: #5dc989;
+  background: rgba(93, 201, 137, .12);
+  border-color: rgba(93, 201, 137, .24);
+}
+.clink-status.is-busy {
+  border-color: rgba(200,165,60,.26);
+  background: rgba(200,165,60,.08);
+}
 
 .clink-icon {
   width: 38px; height: 38px; border-radius: 8px;

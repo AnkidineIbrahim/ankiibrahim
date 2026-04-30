@@ -272,7 +272,7 @@ def admin_profile():
         p.location   = request.form.get('location', p.location)
         p.linkedin   = request.form.get('linkedin', p.linkedin)
         p.github     = request.form.get('github', p.github)
-        p.available  = 'available' in request.form
+        p.available  = request.form.get('available') == '1'
         p.years_exp  = int(request.form.get('years_exp', p.years_exp) or 0)
         p.companies  = int(request.form.get('companies',  p.companies) or 0)
         p.tech_count = int(request.form.get('tech_count', p.tech_count) or 0)

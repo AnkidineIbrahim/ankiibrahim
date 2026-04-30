@@ -82,6 +82,13 @@
     <div class="about-right reveal">
       <div class="info-card">
         <p class="info-title"><i class="fas fa-address-card"></i> Informations</p>
+        <div class="availability-card {% if profile.available %}is-available{% else %}is-busy{% endif %}">
+          <span class="availability-dot"></span>
+          <div>
+            <strong>{% if profile.available %}Disponible pour de nouvelles missions{% else %}Actuellement occupé{% endif %}</strong>
+            <span>{% if profile.available %}Je suis ouvert à une mission freelance, une collaboration ou une nouvelle opportunité.{% else %}Je reste joignable, mais mes disponibilités sont actuellement plus limitées.{% endif %}</span>
+          </div>
+        </div>
         <ul class="info-list">
           <li><i class="fas fa-envelope"></i><a href="mailto:{{ profile.email }}">{{ profile.email }}</a></li>
           {% if profile.phone %}<li><i class="fas fa-phone"></i>{{ profile.phone }}</li>{% endif %}
@@ -207,8 +214,12 @@
   <div class="sec-div"></div>
   <div class="contact-wrap">
     <div class="contact-left reveal">
-      <p>Vous avez un projet ambitieux ou souhaitez simplement discuter de tech ? Je suis ouvert à toutes les opportunités intéressantes.</p>
+      <p>{% if profile.available %}Vous avez un projet ambitieux ou souhaitez simplement discuter de tech ? Je suis actuellement disponible et ouvert aux opportunités intéressantes.{% else %}Vous avez un projet ambitieux ou souhaitez simplement discuter de tech ? Je reste joignable, même si je ne suis pas immédiatement disponible pour une nouvelle mission.{% endif %}</p>
       <div class="contact-links">
+        <div class="clink clink-status {% if profile.available %}is-available{% else %}is-busy{% endif %}">
+          <div class="clink-icon"><i class="fas {% if profile.available %}fa-circle-check{% else %}fa-clock{% endif %}"></i></div>
+          <div><span class="clink-lbl">Statut</span><span class="clink-val">{% if profile.available %}Disponible pour missions{% else %}Disponibilité limitée pour le moment{% endif %}</span></div>
+        </div>
         <a href="{{ url_for('download_cv') }}" class="clink clink-cv">
           <div class="clink-icon gold-bg"><i class="fas fa-file-arrow-down"></i></div>
           <div><span class="clink-lbl">Curriculum Vitæ</span><span class="clink-val">Télécharger mon CV (PDF)</span></div>
