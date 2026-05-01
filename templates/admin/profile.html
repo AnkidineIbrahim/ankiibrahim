@@ -18,19 +18,15 @@
         </label>
       </div>
       <div class="dash-card mt">
-        <h3 class="card-section-title"><i class="fas fa-file-pdf"></i> Curriculum Vitæ</h3>
-        <p class="form-hint">Fichier actuel : <code>{{ profile.cv_file }}</code></p>
-        <label class="file-label">
-          <i class="fas fa-upload"></i> Remplacer le CV (PDF)
-          <input type="file" name="cv" accept=".pdf"/>
-        </label>
+        <h3 class="card-section-title"><i class="fas fa-file-pdf"></i> Curriculum Vitae</h3>
+        <p class="form-hint">Le CV est genere automatiquement a partir des donnees du portfolio. Toute modification du profil, des experiences, des competences, des projets ou de la formation sera refletee dans le PDF.</p>
         <a href="{{ url_for('download_cv') }}" class="btn-outline mt" style="display:inline-flex;margin-top:.8rem">
-          <i class="fas fa-download"></i> Télécharger actuel
+          <i class="fas fa-download"></i> Telecharger le CV genere
         </a>
       </div>
       <div class="dash-card mt">
         <h3 class="card-section-title"><i class="fas fa-chart-bar"></i> Stats Hero</h3>
-        <div class="fg"><label>Années d'exp.</label><input type="number" name="years_exp" value="{{ profile.years_exp }}" min="0"/></div>
+        <div class="fg"><label>Annees d'exp.</label><input type="number" name="years_exp" value="{{ profile.years_exp }}" min="0"/></div>
         <div class="fg"><label>Entreprises</label><input type="number" name="companies" value="{{ profile.companies }}" min="0"/></div>
         <div class="fg"><label>Technologies</label><input type="number" name="tech_count" value="{{ profile.tech_count }}" min="0"/></div>
         <div class="fg toggle-fg">
@@ -38,7 +34,7 @@
           <input type="hidden" name="available" value="0"/>
           <label class="toggle"><input type="checkbox" name="available" value="1" {% if profile.available %}checked{% endif %}/><span class="toggle-slider"></span></label>
         </div>
-        <p class="form-hint">Cette option pilote le statut affiché sur le site public. Activée, elle signale que vous êtes disponible pour une nouvelle mission. Désactivée, elle indique que vous êtes actuellement occupé.</p>
+        <p class="form-hint">Cette option pilote le statut affiche sur le site public. Activee, elle signale que vous etes disponible pour une nouvelle mission. Desactivee, elle indique que vous etes actuellement occupe.</p>
       </div>
     </div>
 
@@ -48,15 +44,15 @@
         <h3 class="card-section-title"><i class="fas fa-user"></i> Informations personnelles</h3>
         <div class="fg"><label>Nom complet</label><input type="text" name="name" value="{{ profile.name }}" required/></div>
         <div class="fg"><label>Titre / Poste</label><input type="text" name="title" value="{{ profile.title }}" required/></div>
-        <div class="fg"><label>Bio / Résumé</label><textarea name="bio" rows="4">{{ profile.bio }}</textarea></div>
+        <div class="fg"><label>Bio / Resume</label><textarea name="bio" rows="4">{{ profile.bio }}</textarea></div>
         <div class="fg-row">
           <div class="fg"><label>Email</label><input type="email" name="email" value="{{ profile.email }}"/></div>
-          <div class="fg"><label>Téléphone</label><input type="text" name="phone" value="{{ profile.phone }}"/></div>
+          <div class="fg"><label>Telephone</label><input type="text" name="phone" value="{{ profile.phone }}"/></div>
         </div>
         <div class="fg"><label>Localisation</label><input type="text" name="location" value="{{ profile.location }}"/></div>
       </div>
       <div class="dash-card mt">
-        <h3 class="card-section-title"><i class="fas fa-share-alt"></i> Réseaux sociaux</h3>
+        <h3 class="card-section-title"><i class="fas fa-share-alt"></i> Reseaux sociaux</h3>
         <div class="fg"><label><i class="fab fa-linkedin"></i> LinkedIn URL</label><input type="url" name="linkedin" value="{{ profile.linkedin }}"/></div>
         <div class="fg"><label><i class="fab fa-github"></i> GitHub URL</label><input type="url" name="github" value="{{ profile.github }}"/></div>
       </div>

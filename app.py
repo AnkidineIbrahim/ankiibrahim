@@ -4,13 +4,20 @@ app.py : Application principale
 """
 
 import os, json, uuid
+from io import BytesIO
 from datetime import datetime, timezone
 from flask import (Flask, render_template, redirect, url_for,
-                   request, flash, jsonify, send_from_directory, abort)
+                   request, flash, jsonify, send_from_directory, abort, send_file)
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin, login_user,
                          logout_user, login_required, current_user)
 from markupsafe import Markup, escape
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_RIGHT
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -152,6 +159,263 @@ def record_visit(page='home'):
     except Exception:
         pass
 
+def build_cv_pdf(profile, experiences, skills, projects, education):
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=1.45 * cm,
+        rightMargin=1.45 * cm,
+        topMargin=1.35 * cm,
+        bottomMargin=1.35 * cm,
+        title=f"CV {profile.name}",
+        author=profile.name,
+    )
+
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(
+        name='CvName',
+        parent=styles['Heading1'],
+        fontName='Helvetica-Bold',
+        fontSize=24,
+        leading=27,
+        textColor=colors.white,
+        spaceAfter=3,
+    ))
+    styles.add(ParagraphStyle(
+        name='CvTitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=11,
+        leading=14,
+        textColor=colors.HexColor('#F6DFA4'),
+        spaceAfter=0,
+    ))
+    styles.add(ParagraphStyle(
+        name='CvSection',
+        parent=styles['Heading2'],
+        fontName='Helvetica-Bold',
+        fontSize=10,
+        leading=12,
+        textColor=colors.HexColor('#111827'),
+        backColor=colors.HexColor('#F8F4EA'),
+        borderPadding=(5, 7, 5, 7),
+        spaceBefore=0,
+        spaceAfter=8,
+    ))
+    styles.add(ParagraphStyle(
+        name='CvBody',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=9.2,
+        leading=13,
+        textColor=colors.HexColor('#1F2937'),
+    ))
+    styles.add(ParagraphStyle(
+        name='CvMuted',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=8.7,
+        leading=11.5,
+        textColor=colors.HexColor('#4B5563'),
+    ))
+    styles.add(ParagraphStyle(
+        name='CvRight',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=9,
+        leading=12,
+        alignment=TA_RIGHT,
+        textColor=colors.HexColor('#374151'),
+    ))
+    styles.add(ParagraphStyle(
+        name='CvMeta',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=8.3,
+        leading=10,
+        textColor=colors.HexColor('#A16207'),
+        spaceAfter=2,
+    ))
+    styles.add(ParagraphStyle(
+        name='CvSidebarSection',
+        parent=styles['Heading2'],
+        fontName='Helvetica-Bold',
+        fontSize=9.2,
+        leading=11,
+        textColor=colors.white,
+        backColor=colors.HexColor('#B2872F'),
+        borderPadding=(5, 7, 5, 7),
+        spaceBefore=0,
+        spaceAfter=8,
+    ))
+    styles.add(ParagraphStyle(
+        name='CvSidebarBody',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=8.7,
+        leading=11.4,
+        textColor=colors.HexColor('#E5E7EB'),
+    ))
+    styles.add(ParagraphStyle(
+        name='CvSidebarMuted',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=8.1,
+        leading=10.2,
+        textColor=colors.HexColor('#F6DFA4'),
+        spaceAfter=2,
+    ))
+    styles.add(ParagraphStyle(
+        name='CvSmall',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=8.4,
+        leading=10.8,
+        textColor=colors.HexColor('#4B5563'),
+    ))
+
+    def clean_lines(value):
+        return '<br/>'.join(
+            escape(line.strip())
+            for line in (value or '').splitlines()
+            if line.strip()
+        )
+
+    def list_to_sentence(items):
+        return ', '.join(escape(item) for item in items if item)
+
+    story = []
+    accent = colors.HexColor('#C89B3C')
+    dark = colors.HexColor('#111827')
+    light = colors.HexColor('#F8FAFC')
+    border = colors.HexColor('#E5E7EB')
+
+    header_left = [
+        Paragraph(escape(profile.name), styles['CvName']),
+        Paragraph(escape(profile.title or ''), styles['CvTitle']),
+    ]
+    header_right = []
+    if profile.email:
+        header_right.append(Paragraph(escape(profile.email), styles['CvSidebarBody']))
+    if profile.phone:
+        header_right.append(Paragraph(escape(profile.phone), styles['CvSidebarBody']))
+    if profile.location:
+        header_right.append(Paragraph(escape(profile.location), styles['CvSidebarBody']))
+    if profile.linkedin:
+        header_right.append(Paragraph(escape(profile.linkedin), styles['CvSidebarBody']))
+    if profile.github:
+        header_right.append(Paragraph(escape(profile.github), styles['CvSidebarBody']))
+
+    header = Table(
+        [[header_left, header_right]],
+        colWidths=[10.9 * cm, 5.8 * cm]
+    )
+    header.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), dark),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 14),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 14),
+        ('TOPPADDING', (0, 0), (-1, -1), 14),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 14),
+    ]))
+    story.append(header)
+    story.append(Spacer(1, 0.34 * cm))
+
+    left_column = []
+    right_column = []
+
+    left_column.append(Paragraph('Profil', styles['CvSidebarSection']))
+    summary_bits = [
+        f"{profile.years_exp}+ ans d'experience" if profile.years_exp else None,
+        f"{profile.companies} entreprises" if profile.companies else None,
+        f"{profile.tech_count}+ technologies" if profile.tech_count else None,
+        'Disponible pour de nouvelles missions' if profile.available else 'Disponibilite actuelle limitee',
+    ]
+    left_column.append(Paragraph(' | '.join(bit for bit in summary_bits if bit), styles['CvSidebarBody']))
+    if profile.bio:
+        left_column.append(Spacer(1, 0.14 * cm))
+        left_column.append(Paragraph(clean_lines(profile.bio), styles['CvSidebarBody']))
+
+    if skills:
+        left_column.append(Spacer(1, 0.18 * cm))
+        left_column.append(Paragraph('Competences', styles['CvSidebarSection']))
+        for skill in skills:
+            items = list_to_sentence(skill.get_items())
+            if items:
+                left_column.append(Paragraph(escape(skill.category).upper(), styles['CvSidebarMuted']))
+                left_column.append(Paragraph(items, styles['CvSidebarBody']))
+                left_column.append(Spacer(1, 0.12 * cm))
+
+    right_column.append(Paragraph('Experience professionnelle', styles['CvSection']))
+    if experiences:
+        for exp in experiences:
+            left = Paragraph(
+                f"<b>{escape(exp.role)}</b><br/>{escape(exp.company)}",
+                styles['CvBody']
+            )
+            right = Paragraph(escape(exp.period), styles['CvRight'])
+            exp_table = Table([[left, right]], colWidths=[8.7 * cm, 3.2 * cm])
+            exp_table.setStyle(TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                ('TOPPADDING', (0, 0), (-1, -1), 0),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                ('LINEBELOW', (0, 0), (-1, 0), 0.4, border),
+            ]))
+            right_column.append(exp_table)
+            for bullet in exp.get_bullets():
+                right_column.append(Paragraph(f"- {escape(bullet)}", styles['CvBody']))
+            right_column.append(Spacer(1, 0.16 * cm))
+    else:
+        right_column.append(Paragraph("Aucune experience renseignee pour le moment.", styles['CvSmall']))
+
+    if education:
+        right_column.append(Spacer(1, 0.12 * cm))
+        right_column.append(Paragraph('Formation', styles['CvSection']))
+        for edu in education:
+            left = Paragraph(
+                f"<b>{escape(edu.degree)}</b><br/>{escape(edu.school)}",
+                styles['CvBody']
+            )
+            right = Paragraph(escape(edu.period), styles['CvRight'])
+            row = Table([[left, right]], colWidths=[8.7 * cm, 3.2 * cm])
+            row.setStyle(TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                ('TOPPADDING', (0, 0), (-1, -1), 0),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                ('LINEBELOW', (0, 0), (-1, 0), 0.35, border),
+            ]))
+            right_column.append(row)
+
+    body = Table(
+        [[left_column, right_column]],
+        colWidths=[5.0 * cm, 10.9 * cm]
+    )
+    body.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, 0), dark),
+        ('BACKGROUND', (1, 0), (1, 0), light),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('LEFTPADDING', (0, 0), (0, 0), 13),
+        ('RIGHTPADDING', (0, 0), (0, 0), 13),
+        ('TOPPADDING', (0, 0), (0, 0), 16),
+        ('BOTTOMPADDING', (0, 0), (0, 0), 16),
+        ('LEFTPADDING', (1, 0), (1, 0), 16),
+        ('RIGHTPADDING', (1, 0), (1, 0), 16),
+        ('TOPPADDING', (1, 0), (1, 0), 16),
+        ('BOTTOMPADDING', (1, 0), (1, 0), 16),
+        ('LINEABOVE', (1, 0), (1, 0), 4, accent),
+        ('BOX', (0, 0), (-1, -1), 0.6, border),
+    ]))
+    story.append(body)
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer
+
 @app.template_filter('nl2br')
 def nl2br_filter(value):
     text = escape((value or '').replace('\r\n', '\n'))
@@ -205,9 +469,22 @@ def contact():
 def download_cv():
     record_visit('cv_download')
     profile = Profile.query.first()
-    cv = profile.cv_file if profile else 'cv_ibrahim_ankidine.pdf'
-    return send_from_directory('static', cv, as_attachment=True,
-                               download_name='CV_Ibrahim_Ankidine.pdf')
+    if not profile:
+        return abort(404)
+
+    experiences = Experience.query.order_by(Experience.order).all()
+    skills = Skill.query.order_by(Skill.order).all()
+    projects = Project.query.order_by(Project.order).all()
+    education = Education.query.order_by(Education.order).all()
+
+    pdf = build_cv_pdf(profile, experiences, skills, projects, education)
+    safe_name = secure_filename(profile.name.replace(' ', '_')) or 'CV'
+    return send_file(
+        pdf,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=f"CV_{safe_name}.pdf",
+    )
 
 @app.route('/favicon.ico')
 def favicon():
