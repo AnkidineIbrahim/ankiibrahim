@@ -800,7 +800,10 @@ section { padding: 110px 5vw; position: relative; }
 
 .exp-wrap { display: grid; grid-template-columns: 1fr 2fr; gap: 6rem; }
 .exp-sidebar p { color: var(--text-2); font-size: .9rem; line-height: 1.75; }
-
+.about-text p {
+  color: var(--text-2); font-size: 1rem; line-height: 1.85;
+  margin-bottom: 1.2rem;
+}
 .timeline { position: relative; }
 .timeline::before {
   content: ''; position: absolute;

@@ -389,6 +389,12 @@ def build_cv_pdf(profile, experiences, skills, projects, education):
         left_column.append(Spacer(1, 0.14 * cm))
         left_column.append(Paragraph(clean_lines(profile.bio), styles['CvSidebarBody']))
 
+    languages = profile.get_languages()
+    if languages:
+        left_column.append(Spacer(1, 0.18 * cm))
+        left_column.append(Paragraph('Langues parlees', styles['CvSidebarSection']))
+        left_column.append(Paragraph(', '.join(escape(lang) for lang in languages), styles['CvSidebarBody']))
+
     if skills:
         left_column.append(Spacer(1, 0.18 * cm))
         left_column.append(Paragraph('Competences', styles['CvSidebarSection']))
@@ -566,6 +572,10 @@ def admin_logout():
     return redirect(url_for('index'))
 
 # ── ADMIN DASHBOARD ───────────────────────────────────────────
+
+@app.route('/admin/')
+def admin_root():
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin')
 @login_required
