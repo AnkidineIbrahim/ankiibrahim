@@ -94,6 +94,16 @@
           <li><i class="fab fa-github"></i><a href="{{ profile.github }}" target="_blank">github.com/AnkidineIbrahim</a></li>
           <li><i class="fas fa-map-marker-alt"></i>{{ profile.location }}</li>
         </ul>
+        {% if profile.get_languages() %}
+        <div class="info-subsection">
+          <p class="info-subtitle"><i class="fas fa-language"></i> Langues parlÃ©es</p>
+          <div class="info-pills">
+            {% for language in profile.get_languages() %}
+            <span class="info-pill">{{ language }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
         <a href="{{ url_for('download_cv') }}" class="cv-card-btn">
           <i class="fas fa-file-arrow-down"></i> Télécharger mon CV
         </a>

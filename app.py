@@ -12,6 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin, login_user,
                          logout_user, login_required, current_user)
 from markupsafe import Markup, escape
+from sqlalchemy import inspect, text
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_RIGHT
 from reportlab.lib.pagesizes import A4
@@ -70,6 +71,13 @@ class Profile(db.Model):
     years_exp   = db.Column(db.Integer,     default=3)
     companies   = db.Column(db.Integer,     default=2)
     tech_count  = db.Column(db.Integer,     default=10)
+    languages   = db.Column(db.Text,        default='[]')
+
+    def get_languages(self):
+        try:
+            return json.loads(self.languages or '[]')
+        except (TypeError, json.JSONDecodeError):
+            return []
 
 class Experience(db.Model):
     id          = db.Column(db.Integer, primary_key=True)
@@ -130,6 +138,21 @@ class Visit(db.Model):
     ip         = db.Column(db.String(60),  default='')
     user_agent = db.Column(db.String(300), default='')
     created_at = db.Column(db.DateTime,    default=datetime.utcnow)
+
+
+def ensure_schema_updates():
+    inspector = inspect(db.engine)
+
+    if inspector.has_table('profile'):
+        profile_columns = {column['name'] for column in inspector.get_columns('profile')}
+        if 'languages' not in profile_columns:
+            db.session.execute(text("ALTER TABLE profile ADD COLUMN languages TEXT DEFAULT '[]'"))
+            db.session.commit()
+
+
+with app.app_context():
+    db.create_all()
+    ensure_schema_updates()
 
 # ── HELPERS ──────────────────────────────────────────────────
 
@@ -584,6 +607,13 @@ def admin_profile():
         p.years_exp  = int(request.form.get('years_exp', p.years_exp) or 0)
         p.companies  = int(request.form.get('companies',  p.companies) or 0)
         p.tech_count = int(request.form.get('tech_count', p.tech_count) or 0)
+        raw_languages = request.form.get('languages', '')
+        languages = [
+            item.strip()
+            for item in raw_languages.replace('\r', '').replace('\n', ',').split(',')
+            if item.strip()
+        ]
+        p.languages  = json.dumps(languages, ensure_ascii=False)
         # Photo upload
         photo = request.files.get('photo')
         if photo and photo.filename:
@@ -873,6 +903,7 @@ def admin_stats():
 def init_db(reset_admin=False):
     with app.app_context():
         db.create_all()
+        ensure_schema_updates()
 
         # Admin par défaut
         admin = Admin.query.first()
@@ -887,7 +918,7 @@ def init_db(reset_admin=False):
 
         # Profil par défaut
         if not Profile.query.first():
-            db.session.add(Profile())
+            db.session.add(Profile(languages=json.dumps(['Français', 'Anglais', 'Comorien'], ensure_ascii=False)))
 
         # Expériences
         if not Experience.query.first():
