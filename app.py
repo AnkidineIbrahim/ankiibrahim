@@ -17,7 +17,7 @@ from reportlab.lib.enums import TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -285,16 +285,46 @@ def build_cv_pdf(profile, experiences, skills, projects, education):
     def list_to_sentence(items):
         return ', '.join(escape(item) for item in items if item)
 
+    def get_profile_image():
+        photo = (profile.photo or '').strip()
+        if not photo:
+            return None
+
+        image_path = os.path.join(app.root_path, 'static', photo.replace('/', os.sep))
+        if not os.path.exists(image_path):
+            return None
+
+        avatar = Image(image_path, width=2.55 * cm, height=2.55 * cm)
+        avatar.hAlign = 'LEFT'
+        return avatar
+
     story = []
     accent = colors.HexColor('#C89B3C')
     dark = colors.HexColor('#111827')
     light = colors.HexColor('#F8FAFC')
     border = colors.HexColor('#E5E7EB')
 
-    header_left = [
+    identity_block = [
         Paragraph(escape(profile.name), styles['CvName']),
         Paragraph(escape(profile.title or ''), styles['CvTitle']),
     ]
+
+    profile_image = get_profile_image()
+    if profile_image:
+        header_left = Table(
+            [[profile_image, identity_block]],
+            colWidths=[2.95 * cm, 7.4 * cm]
+        )
+        header_left.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ('TOPPADDING', (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ]))
+    else:
+        header_left = identity_block
+
     header_right = []
     if profile.email:
         header_right.append(Paragraph(escape(profile.email), styles['CvSidebarBody']))
@@ -326,13 +356,12 @@ def build_cv_pdf(profile, experiences, skills, projects, education):
     right_column = []
 
     left_column.append(Paragraph('Profil', styles['CvSidebarSection']))
-    summary_bits = [
-        f"{profile.years_exp}+ ans d'experience" if profile.years_exp else None,
-        f"{profile.companies} entreprises" if profile.companies else None,
-        f"{profile.tech_count}+ technologies" if profile.tech_count else None,
-        'Disponible pour de nouvelles missions' if profile.available else 'Disponibilite actuelle limitee',
-    ]
-    left_column.append(Paragraph(' | '.join(bit for bit in summary_bits if bit), styles['CvSidebarBody']))
+    availability_text = (
+        'Disponible pour de nouvelles missions'
+        if profile.available else
+        'Actuellement occupe'
+    )
+    left_column.append(Paragraph(availability_text, styles['CvSidebarBody']))
     if profile.bio:
         left_column.append(Spacer(1, 0.14 * cm))
         left_column.append(Paragraph(clean_lines(profile.bio), styles['CvSidebarBody']))
@@ -549,7 +578,9 @@ def admin_profile():
         p.location   = request.form.get('location', p.location)
         p.linkedin   = request.form.get('linkedin', p.linkedin)
         p.github     = request.form.get('github', p.github)
-        p.available  = request.form.get('available') == '1'
+        # The form sends a hidden "0" plus the checkbox "1" when checked.
+        # Use getlist() so the checked state wins whenever "1" is present.
+        p.available  = '1' in request.form.getlist('available')
         p.years_exp  = int(request.form.get('years_exp', p.years_exp) or 0)
         p.companies  = int(request.form.get('companies',  p.companies) or 0)
         p.tech_count = int(request.form.get('tech_count', p.tech_count) or 0)

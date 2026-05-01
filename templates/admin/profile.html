@@ -2,65 +2,96 @@
 {% block title %}Profil{% endblock %}
 {% block page_title %}Mon Profil{% endblock %}
 {% block content %}
-<form method="POST" enctype="multipart/form-data">
-  <div class="form-grid">
+<form method="POST" enctype="multipart/form-data" class="profile-form">
 
-    <!-- LEFT : Photo + CV -->
-    <div class="form-sidebar">
-      <div class="dash-card">
-        <h3 class="card-section-title"><i class="fas fa-camera"></i> Photo de profil</h3>
-        <div class="photo-preview">
-          <img src="{{ url_for('static', filename=profile.photo) }}" alt="Photo" id="photoPreview"/>
+  <div class="profile-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="profile-side">
+
+      <!-- Photo -->
+      <div class="dash-card profile-card center">
+        <h3 class="card-section-title"><i class="fas fa-camera"></i> Photo</h3>
+
+        <div class="photo-preview large">
+          <img src="{{ url_for('static', filename=profile.photo) }}" id="photoPreview"/>
         </div>
-        <label class="file-label">
-          <i class="fas fa-upload"></i> Choisir une photo
-          <input type="file" name="photo" accept="image/*" onchange="previewPhoto(this)"/>
+
+        <label class="file-label w100">
+          <i class="fas fa-upload"></i> Changer
+          <input type="file" name="photo" accept="image/*" onchange="previewPhoto(this)">
         </label>
       </div>
-      <div class="dash-card mt">
-        <h3 class="card-section-title"><i class="fas fa-file-pdf"></i> Curriculum Vitae</h3>
-        <p class="form-hint">Le CV est genere automatiquement a partir des donnees du portfolio. Toute modification du profil, des experiences, des competences, des projets ou de la formation sera refletee dans le PDF.</p>
-        <a href="{{ url_for('download_cv') }}" class="btn-outline mt" style="display:inline-flex;margin-top:.8rem">
-          <i class="fas fa-download"></i> Telecharger le CV genere
+
+      <!-- CV -->
+      <div class="dash-card profile-card">
+        <h3 class="card-section-title"><i class="fas fa-file-pdf"></i> CV</h3>
+
+        <p class="form-hint">
+          Généré automatiquement depuis vos données.
+        </p>
+
+        <a href="{{ url_for('download_cv') }}" class="btn-outline w100">
+          <i class="fas fa-download"></i> Télécharger
         </a>
       </div>
-      <div class="dash-card mt">
-        <h3 class="card-section-title"><i class="fas fa-chart-bar"></i> Stats Hero</h3>
-        <div class="fg"><label>Annees d'exp.</label><input type="number" name="years_exp" value="{{ profile.years_exp }}" min="0"/></div>
-        <div class="fg"><label>Entreprises</label><input type="number" name="companies" value="{{ profile.companies }}" min="0"/></div>
-        <div class="fg"><label>Technologies</label><input type="number" name="tech_count" value="{{ profile.tech_count }}" min="0"/></div>
-        <div class="fg toggle-fg">
-          <label>Disponible pour missions</label>
-          <input type="hidden" name="available" value="0"/>
-          <label class="toggle"><input type="checkbox" name="available" value="1" {% if profile.available %}checked{% endif %}/><span class="toggle-slider"></span></label>
-        </div>
-        <p class="form-hint">Cette option pilote le statut affiche sur le site public. Activee, elle signale que vous etes disponible pour une nouvelle mission. Desactivee, elle indique que vous etes actuellement occupe.</p>
-      </div>
-    </div>
 
-    <!-- RIGHT : Infos -->
-    <div class="form-main">
-      <div class="dash-card">
-        <h3 class="card-section-title"><i class="fas fa-user"></i> Informations personnelles</h3>
-        <div class="fg"><label>Nom complet</label><input type="text" name="name" value="{{ profile.name }}" required/></div>
-        <div class="fg"><label>Titre / Poste</label><input type="text" name="title" value="{{ profile.title }}" required/></div>
-        <div class="fg"><label>Bio / Resume</label><textarea name="bio" rows="4">{{ profile.bio }}</textarea></div>
-        <div class="fg-row">
-          <div class="fg"><label>Email</label><input type="email" name="email" value="{{ profile.email }}"/></div>
-          <div class="fg"><label>Telephone</label><input type="text" name="phone" value="{{ profile.phone }}"/></div>
+      <!-- Stats -->
+      <div class="dash-card profile-card">
+        <h3 class="card-section-title"><i class="fas fa-chart-bar"></i> Stats</h3>
+
+        <div class="fg"><label>Expérience</label><input type="number" name="years_exp" value="{{ profile.years_exp }}"></div>
+        <div class="fg"><label>Entreprises</label><input type="number" name="companies" value="{{ profile.companies }}"></div>
+        <div class="fg"><label>Technologies</label><input type="number" name="tech_count" value="{{ profile.tech_count }}"></div>
+
+        <div class="toggle-fg">
+          <label for="available-toggle">Disponible</label>
+          <input type="hidden" name="available" value="0">
+          <label class="toggle">
+            <input id="available-toggle" type="checkbox" name="available" value="1" {% if profile.available %}checked{% endif %}>
+            <span class="toggle-slider"></span>
+          </label>
         </div>
-        <div class="fg"><label>Localisation</label><input type="text" name="location" value="{{ profile.location }}"/></div>
       </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <section class="profile-main">
+
+      <!-- Infos -->
+      <div class="dash-card">
+        <h3 class="card-section-title"><i class="fas fa-user"></i> Informations</h3>
+
+        <div class="fg"><label>Nom</label><input type="text" name="name" value="{{ profile.name }}" required></div>
+        <div class="fg"><label>Titre</label><input type="text" name="title" value="{{ profile.title }}" required></div>
+        <div class="fg"><label>Bio</label><textarea name="bio">{{ profile.bio }}</textarea></div>
+
+        <div class="fg-row">
+          <div class="fg"><label>Email</label><input type="email" name="email" value="{{ profile.email }}"></div>
+          <div class="fg"><label>Téléphone</label><input type="text" name="phone" value="{{ profile.phone }}"></div>
+        </div>
+
+        <div class="fg"><label>Localisation</label><input type="text" name="location" value="{{ profile.location }}"></div>
+      </div>
+
+      <!-- Social -->
       <div class="dash-card mt">
-        <h3 class="card-section-title"><i class="fas fa-share-alt"></i> Reseaux sociaux</h3>
-        <div class="fg"><label><i class="fab fa-linkedin"></i> LinkedIn URL</label><input type="url" name="linkedin" value="{{ profile.linkedin }}"/></div>
-        <div class="fg"><label><i class="fab fa-github"></i> GitHub URL</label><input type="url" name="github" value="{{ profile.github }}"/></div>
+        <h3 class="card-section-title"><i class="fas fa-share-alt"></i> Réseaux</h3>
+
+        <div class="fg"><label>LinkedIn</label><input type="url" name="linkedin" value="{{ profile.linkedin }}"></div>
+        <div class="fg"><label>GitHub</label><input type="url" name="github" value="{{ profile.github }}"></div>
       </div>
-      <div class="form-actions">
-        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Enregistrer les modifications</button>
+
+      <!-- Actions -->
+      <div class="form-actions sticky">
+        <button class="btn-submit">
+          <i class="fas fa-save"></i> Enregistrer
+        </button>
         <a href="{{ url_for('admin_dashboard') }}" class="btn-cancel">Annuler</a>
       </div>
-    </div>
+
+    </section>
 
   </div>
 </form>
